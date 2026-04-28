@@ -121,62 +121,92 @@ class Student:
             "rank": school_rank,
         }
 
-    def predict(self) -> dict:
-        """基于历史成绩回归预测中考分数和排名"""
-        if len(self.exams) < 2:
-            return {"error": "至少需要2次考试成绩"}
+    # ═══════════════════════════════════════════════
+# 2025 一模基准（用于校准预测）
+# ═══════════════════════════════════════════════
 
-        # 简单线性回归：用考试顺序编号 → 分数百分比
-        names = list(self.exams.keys())
-        xs = list(range(len(names)))
-        ys = [self.exams[n]["pct"] for n in names]
+BENCHMARK_2025 = {
+    "top3_line": 582,       # 前三所线（一模分）
+    "top3_count": 112,      # 前三所在校人数
+    "zhonggao_line": 565,   # 重高线
+    "zhonggao_count": 354,  # 重高在校人数
+}
 
-        n = len(xs)
-        sum_x, sum_y = sum(xs), sum(ys)
-        sum_xy = sum(x * y for x, y in zip(xs, ys))
-        sum_x2 = sum(x * x for x in xs)
+# 预测权重（教育教学研究常用）
+PREDICT_WEIGHTS = {"一模": 0.40, "二模": 0.30, "三模": 0.30}
 
-        slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x)
-        intercept = (sum_y - slope * sum_x) / n
 
-        # 预测下一次考试（中考）的百分比
-        next_x = len(names)
-        predicted_pct = intercept + slope * next_x
+def predict_score_weighted(exams: dict) -> dict:
+    """
+    加权中考分数预测：一模×40% + 二模×30% + 三模×30%
+    缺少的考试自动重新分配权重。
+    """
+    weighted_pct = 0
+    total_weight = 0
 
-        # 置信区间
-        residuals = [ys[i] - (intercept + slope * xs[i]) for i in range(n)]
-        rmse = math.sqrt(sum(r * r for r in residuals) / n) if n > 1 else 0.02
-        ci_low = max(0.3, predicted_pct - 2 * rmse)
-        ci_high = min(0.99, predicted_pct + 2 * rmse)
+    weight_map = {"一模": 0.40, "二模": 0.30, "三模": 0.30}
 
-        predicted_score = predicted_pct * 650
+    for name, w in weight_map.items():
+        if name in exams:
+            e = exams[name]
+            pct = e["score"] / e["total"]
+            weighted_pct += pct * w
+            total_weight += w
 
-        # 校内排名预测：基于最后一次考试的排名趋势
-        ranks = [self.exams[n]["rank"] for n in names]
-        rank_slope = 0
-        if len(ranks) >= 2:
-            rank_diffs = [ranks[i] - ranks[i+1] for i in range(len(ranks)-1)]
-            rank_slope = sum(rank_diffs) / len(rank_diffs)
+    if total_weight == 0:
+        return {"score": 0, "low": 0, "high": 0}
 
-        last_rank = ranks[-1]
-        predicted_rank = max(1, int(last_rank + rank_slope * 0.5))
+    pct = weighted_pct / total_weight
+    score = round(pct * 650)
+    margin = 8
+    return {"score": score, "low": score - margin, "high": score + margin}
 
-        # 全市排名估算（十三中学生实际水平高于全市平均）
-        # 十三中重高率28.64%，全市重高率约17.8%
-        city_advantage = THIRTEEN_SCHOOL["zhonggao_rate"] / 0.178
-        predicted_rank_city_pct = (predicted_rank / self.grade_size) / city_advantage
 
-        self.predicted_score = predicted_score
-        self.predicted_rank_school = predicted_rank
-        self.predicted_rank_city_pct = predicted_rank_city_pct
+def predict_rank_calibrated(exams: dict, predicted_score: float) -> int:
+    """基于排名趋势 + 2025一模基准校准的排名预测"""
+    ranks = []
+    for key in ["九上期末", "一模", "二模"]:
+        if key in exams and "rank" in exams[key]:
+            ranks.append(exams[key]["rank"])
 
-        return {
-            "趋势": "上升" if slope > 0 else "下降" if slope < 0 else "稳定",
-            "预测得分": round(predicted_score, 1),
-            "置信区间": f"{round(ci_low * 650)} - {round(ci_high * 650)}",
-            "预测校内排名": predicted_rank,
-            "估测全市排名百分比": f"{predicted_rank_city_pct*100:.1f}%",
-        }
+    if len(ranks) >= 2:
+        dsum = sum(ranks[i] - ranks[i+1] for i in range(len(ranks)-1))
+        slope = dsum / (len(ranks) - 1)
+        est = max(1, round(ranks[-1] + slope * 0.5))
+    else:
+        est = THIRTEEN_SCHOOL["grade_2026"]
+
+    # 分数校准
+    if predicted_score >= BENCHMARK_2025["top3_line"]:
+        est = min(est, BENCHMARK_2025["top3_count"])
+    elif predicted_score >= BENCHMARK_2025["zhonggao_line"]:
+        est = min(est, BENCHMARK_2025["zhonggao_count"])
+
+    return max(1, min(THIRTEEN_SCHOOL["grade_2026"], est))
+
+
+def compute_internal_ranking(academic_scores: dict, quality_score: float = 0) -> float:
+    """
+    十三中分配生综合得分:
+    学业97% (初一20%+初二30%+初三50%) + 素质3%
+    """
+    weights = {
+        "初一上": 0.10, "初一下": 0.10,
+        "初二上": 0.15, "初二下": 0.15,
+        "初三上": 0.25, "一模": 0.25,
+    }
+    academic = 0
+    total_w = 0
+    for key, w in weights.items():
+        if key in academic_scores:
+            academic += academic_scores[key] * w
+            total_w += w
+
+    if total_w > 0:
+        academic = academic / total_w
+
+    quality = min(quality_score, 10)
+    return academic * 0.97 + quality * 0.03
 
 
 def generate_quota_plans(student: Student) -> list[dict]:
