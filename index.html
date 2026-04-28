@@ -78,14 +78,16 @@ input:focus{border-color:#1a73e8;outline:none}
     <div class="col"><label>初二下 得分/总分</label><input class="input-sm" id="g8b" placeholder="如 475/520"></div>
   </div>
 
-  <div class="section-label">初三模考（用于中考分数预测 + 校内排名）</div>
-  <div class="row" style="margin-bottom:4px">
-    <div class="col"><label>九上期末 得分/总分/校排</label><input id="e9a" placeholder="如 520/620/310"></div>
-    <div class="col"><label>一模 ⭐ 得分/总分/校排</label><input id="e1a" placeholder="如 535/620/285"></div>
-  </div>
+  <div class="section-label">📊 区统考（可横向比较 · 最可靠）</div>
   <div class="row">
-    <div class="col"><label>二模 得分/总分/校排</label><input id="e2a" placeholder="如 548/620/260"></div>
-    <div class="col"><label>三模 得分/总分/校排</label><input id="e3a" placeholder="如 560/620/240"></div>
+    <div class="col"><label>九上期末 得分/总分/年排 ⭐</label><input id="e9a" placeholder="如 520/620/310"></div>
+    <div class="col"><label>一模 得分/总分/年排 ⭐⭐</label><input id="e1a" placeholder="如 535/620/285"></div>
+  </div>
+
+  <div class="section-label">📝 校统考（看趋势 · 年排始终是锚）</div>
+  <div class="row">
+    <div class="col"><label>二模 得分/总分/年排</label><input id="e2a" placeholder="如 548/620/260"></div>
+    <div class="col"><label>三模 得分/总分/年排</label><input id="e3a" placeholder="如 560/620/240"></div>
   </div>
 
   <div class="section-label">素质特长加分</div>
@@ -100,12 +102,13 @@ input:focus{border-color:#1a73e8;outline:none}
 <div class="card" id="predCard" style="display:none">
   <h2>🔮 综合预测</h2>
   <div class="pred-box">
-    <div class="score" id="predScore">--</div>
-    <div class="range" id="predRange"></div>
+    <div style="font-size:13px;color:#888">核⼼指标：校内排名</div>
+    <div class="score" id="predRank" style="font-size:42px;color:#e65100">--</div>
+    <div class="range" id="predScore" style="font-size:16px;color:#666"></div>
     <div class="grid-3">
-      <div><div class="val" id="predRank" style="color:#333">--</div><div class="lbl">预测校内排名</div></div>
-      <div><div class="val" id="zhonggaoChance" style="color:#2e7d32">--</div><div class="lbl">重高概率</div></div>
-      <div><div class="val" id="quotaPos" style="color:#e65100">--</div><div class="lbl">分配生竞争位</div></div>
+      <div><div class="val" style="color:#2e7d32">28.6%</div><div class="lbl">十三中重高率</div></div>
+      <div><div class="val" id="zhonggaoChance" style="color:#1a73e8">--</div><div class="lbl">你上重高概率</div></div>
+      <div><div class="val" id="quotaPos" style="color:#333">--</div><div class="lbl">vs 分配生线</div></div>
     </div>
   </div>
   <div class="benchmark" id="benchmark"></div>
@@ -173,9 +176,8 @@ function parseInput(id) {
 }
 
 function computeInternalRank(inputs) {
-  // 2026分配生算法（合理调整）：
-  // 学业97% + 素质3%
-  // 初一15% + 初二25% + 九上25% + 一模35%
+  // 2026分配生算法：学校年排 + 重高率 主导
+  // 成绩只是辅助校准，年排格局变化不大
 
   const quality = parseFloat(document.getElementById("quality").value) || 0;
   const qualityScore = Math.min(quality, 10) * 0.03;
@@ -183,19 +185,19 @@ function computeInternalRank(inputs) {
   let academicScore = 0;
   let totalWeight = 0;
 
-  // 初一 15% (上下各7.5%)
-  if (inputs.g7a) { academicScore += (inputs.g7a.score/inputs.g7a.total) * 0.075; totalWeight += 0.075; }
-  if (inputs.g7b) { academicScore += (inputs.g7b.score/inputs.g7b.total) * 0.075; totalWeight += 0.075; }
+  // 初一 20% (上下各10%) — 看基础稳定性
+  if (inputs.g7a) { academicScore += (inputs.g7a.score/inputs.g7a.total) * 0.10; totalWeight += 0.10; }
+  if (inputs.g7b) { academicScore += (inputs.g7b.score/inputs.g7b.total) * 0.10; totalWeight += 0.10; }
 
-  // 初二 25% (上下各12.5%)
-  if (inputs.g8a) { academicScore += (inputs.g8a.score/inputs.g8a.total) * 0.125; totalWeight += 0.125; }
-  if (inputs.g8b) { academicScore += (inputs.g8b.score/inputs.g8b.total) * 0.125; totalWeight += 0.125; }
+  // 初二 30% (上下各15%) — 看发展趋势
+  if (inputs.g8a) { academicScore += (inputs.g8a.score/inputs.g8a.total) * 0.15; totalWeight += 0.15; }
+  if (inputs.g8b) { academicScore += (inputs.g8b.score/inputs.g8b.total) * 0.15; totalWeight += 0.15; }
 
-  // 九上 25%
+  // 初三上 25% — 九上期末
   if (inputs.e9a) { academicScore += (inputs.e9a.score/inputs.e9a.total) * 0.25; totalWeight += 0.25; }
 
-  // 一模 35%
-  if (inputs.e1a) { academicScore += (inputs.e1a.score/inputs.e1a.total) * 0.35; totalWeight += 0.35; }
+  // 一模 25% — 不是最重要，权重与其他初三考试持平
+  if (inputs.e1a) { academicScore += (inputs.e1a.score/inputs.e1a.total) * 0.25; totalWeight += 0.25; }
 
   // 归一化
   if (totalWeight > 0) academicScore = academicScore / totalWeight * 0.97;
@@ -325,24 +327,25 @@ function analyze() {
   // 3. 排名预测
   const rank = predictRank(inputs, pred.score);
 
-  // 显示
+  // 显示 - 排名为中心
   document.getElementById("predCard").style.display = "block";
-  document.getElementById("predScore").textContent = pred.score + " / 650";
-  document.getElementById("predRange").textContent = `置信区间: ${pred.low} ~ ${pred.high} 分 (±8分)`;
   document.getElementById("predRank").textContent = `第 ${rank} 名`;
+  document.getElementById("predScore").textContent = `估测 ${pred.score} / 650 (±8分)`;
+
+  const quotaNeeded = Math.round(SCHOOL.grade * SCHOOL.zhonggaoRate);
   document.getElementById("zhonggaoChance").textContent =
-    rank <= SCHOOL.grade * SCHOOL.zhonggaoRate * 0.9 ? "80%+" :
-    rank <= SCHOOL.grade * SCHOOL.zhonggaoRate * 1.2 ? "50-80%" : "30-50%";
+    rank <= quotaNeeded * 0.7 ? "80%+" :
+    rank <= quotaNeeded * 1.0 ? "60-80%" :
+    rank <= quotaNeeded * 1.3 ? "35-60%" : "<35%";
   document.getElementById("quotaPos").textContent =
-    rank <= SCHOOL.quota2026 ? `区内(${Math.round(rank/SCHOOL.quota2026*100)}%)` : "集中招生";
+    rank <= SCHOOL.quota2026 ? `分配生区内` : "集中招生";
 
   document.getElementById("benchmark").innerHTML = `
-    📌 <strong>2025一模基准</strong> (校内):
-    前三线: ${BENCHMARK_2025.top3_line}分(前${BENCHMARK_2025.top3_count}名) |
-    重高线: ${BENCHMARK_2025.zhonggao_line}分(前${BENCHMARK_2025.zhonggao_count}名)
-    <br>📌 <strong>校内分配生综合得分</strong>: ${internalRank.internal.toFixed(1)}分
-    (学业${internalRank.academic.toFixed(1)} + 素质${internalRank.quality.toFixed(1)})
-    <br>📌 <strong>预测算法</strong>: 一模40% + 二模30% + 三模30% | 误差±8分
+    📌 <strong>排名对照</strong>:
+    重高线: 前${quotaNeeded}名(28.6%) |
+    分配生线: 前${SCHOOL.quota2026}名 |
+    分配生综合分: ${internalRank.internal.toFixed(1)}
+    <br>📌 <strong>2025一模参考</strong>: 前三线${BENCHMARK_2025.top3_line}分(前${BENCHMARK_2025.top3_count})
   `;
 
   // 生成方案
