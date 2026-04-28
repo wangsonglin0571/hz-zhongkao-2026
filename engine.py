@@ -188,12 +188,14 @@ def predict_rank_calibrated(exams: dict, predicted_score: float) -> int:
 def compute_internal_ranking(academic_scores: dict, quality_score: float = 0) -> float:
     """
     十三中分配生综合得分:
-    学业97% (初一20%+初二30%+初三50%) + 素质3%
+    学业97% + 素质3%
+    初一15% + 初二25% + 九上25% + 一模35%
     """
     weights = {
-        "初一上": 0.10, "初一下": 0.10,
-        "初二上": 0.15, "初二下": 0.15,
-        "初三上": 0.25, "一模": 0.25,
+        "初一上": 0.075, "初一下": 0.075,
+        "初二上": 0.125, "初二下": 0.125,
+        "九上": 0.25,
+        "一模": 0.35,
     }
     academic = 0
     total_w = 0

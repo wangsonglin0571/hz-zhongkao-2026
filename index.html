@@ -173,9 +173,9 @@ function parseInput(id) {
 }
 
 function computeInternalRank(inputs) {
-  // 十三中分配生算法：
-  // 学业成绩97% + 素质特长3%
-  // 初一20% + 初二30% + 初三(九上+一模)50%
+  // 2026分配生算法（合理调整）：
+  // 学业97% + 素质3%
+  // 初一15% + 初二25% + 九上25% + 一模35%
 
   const quality = parseFloat(document.getElementById("quality").value) || 0;
   const qualityScore = Math.min(quality, 10) * 0.03;
@@ -183,17 +183,19 @@ function computeInternalRank(inputs) {
   let academicScore = 0;
   let totalWeight = 0;
 
-  // 初一 20% (上下各10%)
-  if (inputs.g7a) { academicScore += (inputs.g7a.score/inputs.g7a.total) * 0.10; totalWeight += 0.10; }
-  if (inputs.g7b) { academicScore += (inputs.g7b.score/inputs.g7b.total) * 0.10; totalWeight += 0.10; }
+  // 初一 15% (上下各7.5%)
+  if (inputs.g7a) { academicScore += (inputs.g7a.score/inputs.g7a.total) * 0.075; totalWeight += 0.075; }
+  if (inputs.g7b) { academicScore += (inputs.g7b.score/inputs.g7b.total) * 0.075; totalWeight += 0.075; }
 
-  // 初二 30% (上下各15%)
-  if (inputs.g8a) { academicScore += (inputs.g8a.score/inputs.g8a.total) * 0.15; totalWeight += 0.15; }
-  if (inputs.g8b) { academicScore += (inputs.g8b.score/inputs.g8b.total) * 0.15; totalWeight += 0.15; }
+  // 初二 25% (上下各12.5%)
+  if (inputs.g8a) { academicScore += (inputs.g8a.score/inputs.g8a.total) * 0.125; totalWeight += 0.125; }
+  if (inputs.g8b) { academicScore += (inputs.g8b.score/inputs.g8b.total) * 0.125; totalWeight += 0.125; }
 
-  // 初三 50% (九上25% + 一模25%)
+  // 九上 25%
   if (inputs.e9a) { academicScore += (inputs.e9a.score/inputs.e9a.total) * 0.25; totalWeight += 0.25; }
-  if (inputs.e1a) { academicScore += (inputs.e1a.score/inputs.e1a.total) * 0.25; totalWeight += 0.25; }
+
+  // 一模 35%
+  if (inputs.e1a) { academicScore += (inputs.e1a.score/inputs.e1a.total) * 0.35; totalWeight += 0.35; }
 
   // 归一化
   if (totalWeight > 0) academicScore = academicScore / totalWeight * 0.97;
