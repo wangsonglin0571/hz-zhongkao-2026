@@ -90,10 +90,9 @@ input:focus{border-color:#1a73e8;outline:none}
     <div class="col"><label>三模 得分/总分/年排</label><input id="e3a" placeholder="如 560/620/240"></div>
   </div>
 
-  <div class="section-label">素质特长加分</div>
+  <div class="section-label">策略偏好</div>
   <div class="row">
-    <div class="col"><label>素质特长分 (0-10)</label><input id="quality" value="3" placeholder="3"></div>
-    <div class="col"><label>策略偏好</label><select id="strategy"><option value="balanced">⚖️ 平衡型</option><option value="aggressive">🚀 进取型</option><option value="safe">🛡️ 保守型</option></select></div>
+    <div class="col"><select id="strategy"><option value="balanced">⚖️ 平衡型</option><option value="aggressive">🚀 进取型</option><option value="safe">🛡️ 保守型</option></select></div>
   </div>
   <button class="btn" onclick="analyze()">🔮 生成志愿方案</button>
 </div>
@@ -176,11 +175,8 @@ function parseInput(id) {
 }
 
 function computeInternalRank(inputs) {
-  // 2026分配生算法：学校年排 + 重高率 主导
-  // 成绩只是辅助校准，年排格局变化不大
-
-  const quality = parseFloat(document.getElementById("quality").value) || 0;
-  const qualityScore = Math.min(quality, 10) * 0.03;
+  // 分配生综合得分：学业成绩 100%（去掉素质分）
+  // 年排 + 重高率 主导
 
   let academicScore = 0;
   let totalWeight = 0;
@@ -200,9 +196,9 @@ function computeInternalRank(inputs) {
   if (inputs.e1a) { academicScore += (inputs.e1a.score/inputs.e1a.total) * 0.25; totalWeight += 0.25; }
 
   // 归一化
-  if (totalWeight > 0) academicScore = academicScore / totalWeight * 0.97;
+  if (totalWeight > 0) academicScore = academicScore / totalWeight;
 
-  return {internal: (academicScore + qualityScore) * 100, academic: academicScore * 100 / 0.97, quality: qualityScore * 100};
+  return {internal: academicScore * 100};
 }
 
 function predictScore(inputs) {
@@ -266,34 +262,60 @@ function predictRank(inputs, score) {
   return Math.round(SCHOOL.grade * (1 - score / 650));
 }
 
-function genPlans(rank, type, strategy) {
-  const maxN = type === "quota" ? 5 : 10;
+// ═══════════════ 冲重高 / 稳优高 定制算法 ═══════════════
+function genQuotaPlans(rank) {
+  // 分配生：校内竞争，看校内年排 vs 学校录取参考位次
+  const plans = [];
+  const quotaLine = SCHOOL.quota2026; // 229名
+  const zhonggaoLine = Math.round(SCHOOL.grade * SCHOOL.zhonggaoRate); // 324名
+
+  for (let s of SCHOOLS) {
+    if (!s.r || s.q <= 0) continue;
+    const gap = s.r - rank; // 正数=你在参考位次之上, 负数=你落后
+
+    let tier, priority;
+    if (gap >= 30)        { tier="🟢 稳"; priority=0; }  // 超出参考位次30名以上
+    else if (gap >= 0)    { tier="🟡 冲"; priority=1; }  // 在参考位次上方但≤30名
+    else if (gap >= -50)  { tier="🔴 搏"; priority=2; }  // 略低于参考位次，需搏
+    else continue; // 差太远不推荐
+
+    // 重高率校准：如果你在重高线以内，可以冲更高
+    const isZhonggaoZone = rank <= zhonggaoLine;
+
+    plans.push({
+      ...s, tier, priority, gap,
+      advice: tier === "🟢 稳" ? "正常发挥可录"
+            : tier === "🟡 冲" ? (isZhonggaoZone ? "重高区内，有优势" : "需超常发挥")
+            : "需要搏一搏，建议对比集中招生"
+    });
+  }
+
+  plans.sort((a,b) => a.priority - b.priority || b.gap - a.gap);
+  return plans.slice(0, 5);
+}
+
+function genCentralPlans(rank) {
+  // 集中招生：全市竞争，十三中学生实际水平高于全市平均
+  const cityAdv = SCHOOL.zhonggaoRate / 0.178; // 十三中优势系数 ~1.6
+  const estCityPct = (rank / SCHOOL.grade) / cityAdv;
   const plans = [];
 
   for (let s of SCHOOLS) {
-    if (!s.r && type === "quota") continue;
-    const refRank = s.r || (type === "central" ? SCHOOL.grade * (1 - s.plan / 5000) : 999);
-    const diff = refRank - rank;
-    let tag,prob,cls;
+    const refRank = s.r || SCHOOL.grade * (1 - estCityPct + 0.1);
+    const cityRefPct = (refRank / SCHOOL.grade) / cityAdv;
+    const gap = cityRefPct - estCityPct;
 
-    if (rank <= refRank * 0.7) { tag="🟢 稳"; prob=">70%"; cls="safe"; }
-    else if (rank <= refRank * 1.0) { tag="🟡 冲"; prob="40-70%"; cls="risky"; }
-    else if (rank <= refRank * 1.5) { tag="🔴 博"; prob="15-40%"; cls="dream"; }
+    let tier, priority;
+    if (gap < -0.02)      { tier="🟢 保"; priority=0; }
+    else if (gap <= 0.02) { tier="🟡 稳"; priority=1; }
+    else if (gap <= 0.06) { tier="🟠 冲"; priority=2; }
     else continue;
 
-    plans.push({...s, tag, prob, cls, diff, refRank});
+    plans.push({...s, tier, priority, gap: Math.round(gap*1000)/10});
   }
 
-  const order = {"🟢 稳":0,"🟡 冲":1,"🔴 博":2};
-  plans.sort((a,b) => order[a.tag]-order[b.tag] || b.diff-a.diff);
-
-  if (strategy === "safe") return plans.filter(p=>p.cls==="safe").slice(0,maxN);
-  if (strategy === "aggressive") {
-    const r = plans.filter(p=>p.cls!=="safe");
-    const s = plans.filter(p=>p.cls==="safe");
-    return [...r,...s].slice(0,maxN);
-  }
-  return plans.slice(0,maxN);
+  plans.sort((a,b) => a.priority - b.priority || a.gap - b.gap);
+  return plans.slice(0, 10);
 }
 
 // ═══════════════ UI ═══════════════
@@ -345,13 +367,12 @@ function analyze() {
     重高线: 前${quotaNeeded}名(28.6%) |
     分配生线: 前${SCHOOL.quota2026}名 |
     分配生综合分: ${internalRank.internal.toFixed(1)}
-    <br>📌 <strong>2025一模参考</strong>: 前三线${BENCHMARK_2025.top3_line}分(前${BENCHMARK_2025.top3_count})
   `;
 
   // 生成方案
   document.getElementById("plansArea").style.display = "block";
-  const quotaPlans = genPlans(rank, "quota", strategy);
-  const centralPlans = genPlans(rank, "central", strategy);
+  const quotaPlans = genQuotaPlans(rank);
+  const centralPlans = genCentralPlans(rank);
   renderPlans("quotaPlans", quotaPlans);
   renderPlans("centralPlans", centralPlans);
 
@@ -370,15 +391,17 @@ function renderPlans(id, plans) {
   const container = document.getElementById(id);
   if (!plans.length) { container.innerHTML='<div class="plan-item"><div class="plan-info" style="text-align:center;color:#999;padding:16px">暂无匹配方案</div></div>'; return; }
   container.innerHTML = plans.map((p,i)=>{
-    const cls = p.cls === "dream" ? "dream" : p.cls === "risky" ? "risky" : "safe";
-    const tc = p.cls === "dream" ? "tag-dream" : p.cls === "risky" ? "tag-risky" : "tag-safe";
+    const cls = p.tier === "🔴 搏" || p.tier === "🟠 冲" ? "dream" : p.tier === "🟡 冲" || p.tier === "🟡 稳" ? "risky" : "safe";
+    const tc = cls === "dream" ? "tag-dream" : cls === "risky" ? "tag-risky" : "tag-safe";
+    const gapInfo = p.gap > 0 ? `+${p.gap}名` : `${p.gap}名`;
     return `<div class="plan-item">
       <div class="plan-num ${cls}">${i+1}</div>
       <div class="plan-info">
-        <div class="school">${p.n} <span style="font-size:11px;color:#999">${p.cat}</span></div>
-        <div class="detail">名额: ${p.q}人 | 参考位次: 前${p.r||"?"}名(2025) | ${p.prob} | ${p.note}</div>
+        <div class="school">${p.n} <span style="font-size:11px;color:#999">${p.cat}·${p.tier||""}级</span></div>
+        <div class="detail">名额: ${p.q||p.plan}人 | 参考位次: 前${p.r||"?"}名(2025) | 差距: ${gapInfo}</div>
+        <div class="detail" style="color:#666">${p.advice||p.note}</div>
       </div>
-      <div class="plan-tag ${tc}">${p.tag}</div>
+      <div class="plan-tag ${tc}">${p.tier}</div>
     </div>`;
   }).join("");
 }
