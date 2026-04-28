@@ -3,426 +3,388 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>杭州2026中考志愿填报 · 十三中专属</title>
+<title>杭州2026中考志愿填报 · 十三中专属 v2</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f5f5;color:#333;line-height:1.6}
 .container{max-width:720px;margin:0 auto;padding:16px}
 .header{background:linear-gradient(135deg,#1a73e8,#0d47a1);color:#fff;padding:24px 16px;text-align:center;border-radius:0 0 16px 16px}
-.header h1{font-size:22px;margin-bottom:4px}
-.header p{font-size:13px;opacity:.85}
-.card{background:#fff;border-radius:12px;padding:20px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.card h2{font-size:17px;margin-bottom:12px;color:#1a73e8;border-bottom:2px solid #e3f2fd;padding-bottom:8px}
-.row{display:flex;gap:12px;flex-wrap:wrap}
-.col{flex:1;min-width:140px}
-label{display:block;font-size:13px;color:#666;margin-bottom:4px}
-input,select{width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;transition:border .2s}
+.header h1{font-size:20px;margin-bottom:4px}
+.header p{font-size:12px;opacity:.85}
+.card{background:#fff;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.card h2{font-size:16px;margin-bottom:10px;color:#1a73e8;border-bottom:2px solid #e3f2fd;padding-bottom:6px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.col{flex:1;min-width:120px}
+label{display:block;font-size:12px;color:#888;margin-bottom:3px}
+input,select{width:100%;padding:9px 10px;border:1.5px solid #ddd;border-radius:8px;font-size:14px}
 input:focus{border-color:#1a73e8;outline:none}
-.btn{background:#1a73e8;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:16px;cursor:pointer;width:100%;margin-top:12px}
+.input-sm{padding:6px 8px;font-size:13px}
+.btn{background:#1a73e8;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:15px;cursor:pointer;width:100%;margin-top:10px;font-weight:600}
 .btn:hover{background:#1557b0}
-.pred-box{background:#e3f2fd;border-radius:8px;padding:16px;text-align:center;margin-top:12px}
-.pred-box .score{font-size:36px;font-weight:bold;color:#1a73e8}
-.pred-box .range{font-size:13px;color:#666}
-.pred-box .rank{font-size:14px;color:#333;margin-top:8px}
-.plan-item{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;gap:12px}
+.section-label{font-size:13px;font-weight:700;color:#555;margin:8px 0 4px;padding-left:4px;border-left:3px solid #1a73e8}
+.pred-box{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-radius:8px;padding:14px;text-align:center;margin-top:10px}
+.pred-box .score{font-size:32px;font-weight:bold;color:#1a73e8}
+.pred-box .range{font-size:12px;color:#666}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;margin-top:8px}
+.grid-3 .val{font-size:18px;font-weight:bold}
+.grid-3 .lbl{font-size:11px;color:#888}
+.benchmark{font-size:12px;color:#555;background:#fafafa;padding:8px;border-radius:6px;margin-top:8px}
+.plan-item{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0;gap:10px}
 .plan-item:last-child{border-bottom:none}
-.plan-num{width:28px;height:28px;border-radius:50%;background:#1a73e8;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;flex-shrink:0}
+.plan-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;flex-shrink:0;color:#fff}
 .plan-num.safe{background:#2e7d32}
 .plan-num.risky{background:#f57c00}
 .plan-num.dream{background:#c62828}
 .plan-info{flex:1}
-.plan-info .school{font-size:15px;font-weight:600}
-.plan-info .detail{font-size:12px;color:#888;margin-top:2px}
-.plan-tag{font-size:11px;padding:3px 8px;border-radius:4px;font-weight:bold;white-space:nowrap}
+.plan-info .school{font-size:14px;font-weight:600}
+.plan-info .detail{font-size:11px;color:#999;margin-top:1px}
+.plan-tag{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:bold;white-space:nowrap}
 .tag-safe{background:#e8f5e9;color:#2e7d32}
 .tag-risky{background:#fff3e0;color:#e65100}
 .tag-dream{background:#fce4ec;color:#c62828}
-.tabs{display:flex;gap:0;margin-bottom:0}
-.tab{padding:10px 16px;background:#eee;border:none;cursor:pointer;font-size:14px;flex:1;text-align:center;border-radius:8px 8px 0 0}
+.tabs{display:flex}
+.tab{flex:1;padding:10px;background:#eee;border:none;cursor:pointer;font-size:13px;text-align:center;border-radius:8px 8px 0 0}
 .tab.active{background:#1a73e8;color:#fff}
-.footer{text-align:center;font-size:12px;color:#999;padding:16px;margin-top:8px}
-.chart-bar{height:6px;background:#e0e0e0;border-radius:3px;margin-top:4px;overflow:hidden}
-.chart-fill{height:100%;border-radius:3px;transition:width .5s}
-.fill-high{background:#2e7d32}
-.fill-mid{background:#f57c00}
-.fill-low{background:#c62828}
-.note{font-size:12px;color:#e65100;background:#fff3e0;padding:8px 12px;border-radius:8px;margin-top:8px}
-.placeholder-text{text-align:center;color:#999;padding:24px;font-size:15px}
+.footer{text-align:center;font-size:11px;color:#999;padding:16px}
+.collapsed .card-body{display:none}
+.toggle-btn{font-size:12px;color:#1a73e8;cursor:pointer;float:right;background:none;border:none}
+.phase-bar{display:flex;align-items:center;gap:4px;font-size:11px;margin:6px 0}
+.phase-bar .bar{flex:1;height:14px;border-radius:7px;position:relative;overflow:hidden}
+.phase-bar .bar-fill{height:100%;border-radius:7px}
+.bar-grade7{background:#e8eaf6}.bar-grade7 .bar-fill{background:#5c6bc0}
+.bar-grade8{background:#fff3e0}.bar-grade8 .bar-fill{background:#ff9800}
+.bar-grade9{background:#e8f5e9}.bar-grade9 .bar-fill{background:#43a047}
+.bar-exam{background:#fce4ec}.bar-exam .bar-fill{background:#e91e63}
 </style>
 </head>
 <body>
-
 <div class="container">
-  <div class="header">
-    <h1>🎓 杭州2026中考志愿填报</h1>
-    <p>杭州十三中（教育集团）专属 · 基于官方政策数据</p>
+<div class="header">
+  <h1>🎓 杭州2026中考志愿填报</h1>
+  <p>杭州十三中专属 · 基于校内分配生算法 + 加权预测</p>
+</div>
+
+<!-- 成绩输入 -->
+<div class="card" id="inputCard">
+  <h2>📊 成绩输入 <span style="font-size:11px;color:#888;font-weight:normal">（校内算法需要初一初二数据）</span></h2>
+
+  <div class="section-label">初一初二（用于校内分配生排名）</div>
+  <div class="row" style="margin-bottom:6px">
+    <div class="col"><label>初一上 得分/总分</label><input class="input-sm" id="g7a" placeholder="如 440/500"></div>
+    <div class="col"><label>初一下 得分/总分</label><input class="input-sm" id="g7b" placeholder="如 455/500"></div>
+  </div>
+  <div class="row">
+    <div class="col"><label>初二上 得分/总分</label><input class="input-sm" id="g8a" placeholder="如 460/520"></div>
+    <div class="col"><label>初二下 得分/总分</label><input class="input-sm" id="g8b" placeholder="如 475/520"></div>
   </div>
 
-  <!-- 输入区 -->
-  <div class="card">
-    <h2>📝 输入成绩（至少2次考试）</h2>
-    <div class="row">
-      <div class="col">
-        <label>九上期末 (分/总分/校排)</label>
-        <input id="e1" placeholder="如 520/620/310" type="text">
-      </div>
-      <div class="col">
-        <label>一模 (分/总分/校排)</label>
-        <input id="e2" placeholder="如 535/620/285" type="text">
-      </div>
-    </div>
-    <div class="row" style="margin-top:8px">
-      <div class="col">
-        <label>二模 (分/总分/校排)</label>
-        <input id="e3" placeholder="如 548/620/260" type="text">
-      </div>
-      <div class="col">
-        <label>三模 (可选)</label>
-        <input id="e4" placeholder="如 560/620/240" type="text">
-      </div>
-    </div>
-    <div class="row" style="margin-top:12px">
-      <div class="col">
-        <label>目标策略偏好</label>
-        <select id="strategy">
-          <option value="balanced">平衡型（推荐）</option>
-          <option value="aggressive">进取型（激进冲高）</option>
-          <option value="safe">保守型（稳妥优先）</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn" onclick="analyze()">🔮 生成志愿方案</button>
+  <div class="section-label">初三模考（用于中考分数预测 + 校内排名）</div>
+  <div class="row" style="margin-bottom:4px">
+    <div class="col"><label>九上期末 得分/总分/校排</label><input id="e9a" placeholder="如 520/620/310"></div>
+    <div class="col"><label>一模 ⭐ 得分/总分/校排</label><input id="e1a" placeholder="如 535/620/285"></div>
+  </div>
+  <div class="row">
+    <div class="col"><label>二模 得分/总分/校排</label><input id="e2a" placeholder="如 548/620/260"></div>
+    <div class="col"><label>三模 得分/总分/校排</label><input id="e3a" placeholder="如 560/620/240"></div>
   </div>
 
-  <!-- 预测结果 -->
-  <div class="card" id="predCard" style="display:none">
-    <h2>🔮 成绩预测</h2>
-    <div class="pred-box">
-      <div class="score" id="predScore">--</div>
-      <div class="range" id="predRange"></div>
-      <div class="rank">校内排名: <strong id="predRank">--</strong> | 估测全市: <strong id="predCity">--</strong></div>
-      <div class="rank" style="font-size:12px;color:#888;margin-top:4px" id="predTrend"></div>
-    </div>
-    <div class="row" style="margin-top:12px">
-      <div class="col" style="text-align:center">
-        <div style="font-size:12px;color:#888">重高率</div>
-        <div style="font-size:20px;font-weight:bold;color:#2e7d32" id="zhonggaoChance">--</div>
-      </div>
-      <div class="col" style="text-align:center">
-        <div style="font-size:12px;color:#888">优高率</div>
-        <div style="font-size:20px;font-weight:bold;color:#1a73e8" id="yougaoChance">--</div>
-      </div>
-      <div class="col" style="text-align:center">
-        <div style="font-size:12px;color:#888">分配生竞争</div>
-        <div style="font-size:20px;font-weight:bold;color:#e65100" id="quotaPos"></div>
-      </div>
+  <div class="section-label">素质特长加分</div>
+  <div class="row">
+    <div class="col"><label>素质特长分 (0-10)</label><input id="quality" value="3" placeholder="3"></div>
+    <div class="col"><label>策略偏好</label><select id="strategy"><option value="balanced">⚖️ 平衡型</option><option value="aggressive">🚀 进取型</option><option value="safe">🛡️ 保守型</option></select></div>
+  </div>
+  <button class="btn" onclick="analyze()">🔮 生成志愿方案</button>
+</div>
+
+<!-- 预测结果 -->
+<div class="card" id="predCard" style="display:none">
+  <h2>🔮 综合预测</h2>
+  <div class="pred-box">
+    <div class="score" id="predScore">--</div>
+    <div class="range" id="predRange"></div>
+    <div class="grid-3">
+      <div><div class="val" id="predRank" style="color:#333">--</div><div class="lbl">预测校内排名</div></div>
+      <div><div class="val" id="zhonggaoChance" style="color:#2e7d32">--</div><div class="lbl">重高概率</div></div>
+      <div><div class="val" id="quotaPos" style="color:#e65100">--</div><div class="lbl">分配生竞争位</div></div>
     </div>
   </div>
+  <div class="benchmark" id="benchmark"></div>
+</div>
 
-  <!-- 方案 Tabs -->
-  <div id="plansArea" style="display:none">
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('quota')">🎯 分配生 (5个方案)</button>
-      <button class="tab" onclick="switchTab('central')">📝 集中招生 (10个方案)</button>
-    </div>
-    <div class="card" id="quotaPlans" style="border-radius:0 0 12px 12px"></div>
-    <div class="card" id="centralPlans" style="display:none;border-radius:0 0 12px 12px"></div>
+<!-- 方案 -->
+<div id="plansArea" style="display:none">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('quota')">🎯 分配生 (5个)</button>
+    <button class="tab" onclick="switchTab('central')">📝 集中招生 (10个)</button>
   </div>
+  <div class="card" id="quotaPlans" style="border-radius:0 0 12px 12px"></div>
+  <div class="card" id="centralPlans" style="display:none;border-radius:0 0 12px 12px"></div>
+</div>
 
-  <div class="note" id="reminder" style="display:none"></div>
+<div class="card" id="reminder" style="display:none;background:#fff3e0;border-left:4px solid #e65100">
+  <h2 style="color:#e65100;border-color:#ffccbc">⚠️ 重要提醒</h2>
+  <div id="reminderText" style="font-size:13px"></div>
+</div>
 
-  <div class="footer">
-    数据来源：杭州教育发布 · 2026年4月官方公告<br>
-    仅供志愿填报参考，具体以学校最终公示名额为准
-  </div>
+<div class="footer">数据来源: 杭州教育发布 · 十三中内部算法 · 2026年4月</div>
 </div>
 
 <script>
-// ═══════════════ 数据层 ═══════════════
-const POLICY = {
-  cityGraduates: 44500, quotaTotal: 9021, totalScore: 650,
-  quotaMax: 5, centralMax: 10,
-  applyDate: "5月29日 8:00 ~ 5月30日 18:00",
-  systemUrl: "www.hzjyks.net"
-};
+// ═══════════════ 数据 ═══════════════
+const SCHOOL = {name:"杭州十三中",grade:1132,quota2026:229,zhonggaoRate:0.2864,yougaoRate:0.71};
+const CALIBRATION = {grade7Total:500,grade8Total:520,grade9aTotal:620,mockTotal:620};
 
-const SCHOOL = {
-  name: "杭州十三中（教育集团）", gradeSize: 1132,
-  quota2026: 229, zhonggaoRate: 0.2864, yougaoRate: 0.71
-};
+// 2025 一模基准（用于校准）
+const BENCHMARK_2025 = {top3_line:582, top3_count:112, zhonggao_line:565, zhonggao_count:354};
 
-// 学校数据（配额 + 2025录取校内排名参考）
 const SCHOOLS = [
-  {n:"杭二中滨江", cat:"重高",tier:"S",plan:672,q:12,r:15,note:"杭州最顶尖"},
-  {n:"学军中学西溪",cat:"重高",tier:"S",plan:672,q:12,r:27,note:"竞赛强校"},
-  {n:"杭高贡院",cat:"重高",tier:"A",plan:624,q:12,r:73,note:"百年名校"},
-  {n:"十四凤起",cat:"重高",tier:"A",plan:576,q:11,r:159,note:"理科强校"},
-  {n:"学军紫金港",cat:"重高",tier:"A",plan:480,q:7,r:111,note:"学军新校区"},
-  {n:"杭四下沙",cat:"重高",tier:"A",plan:624,q:11,r:210,note:"国际化特色"},
-  {n:"浙大附玉泉",cat:"重高",tier:"B",plan:576,q:11,r:230,note:"浙大资源"},
-  {n:"长河高中",cat:"重高",tier:"B",plan:528,q:11,r:295,note:"可捡漏"},
-  {n:"杭高钱江",cat:"重高",tier:"B",plan:480,q:7,r:306,note:"可捡漏3分"},
-  {n:"杭师附中",cat:"重高",tier:"B",plan:528,q:13,r:250,note:"师范底子"},
-  {n:"杭二高新",cat:"重高",tier:"B",plan:864,q:9,r:null,note:"2026新增"},
-  {n:"浙大附实验",cat:"重高",tier:"B",plan:672,q:7,r:null,note:"2026新增"},
-  {n:"学军海创园",cat:"重高",tier:"C",plan:480,q:6,r:350,note:"学军集团"},
-  {n:"杭二钱江",cat:"重高",tier:"C",plan:432,q:4,r:380,note:"杭二集团"},
-  {n:"杭高钱塘",cat:"重高",tier:"C",plan:480,q:10,r:370,note:"杭高集团"},
-  {n:"杭高临平",cat:"重高",tier:"C",plan:432,q:4,r:420,note:"杭高集团"},
-  {n:"十四康桥",cat:"重高",tier:"C",plan:432,q:8,r:400,note:"十四中分校"},
-  {n:"浙大附丁兰",cat:"重高",tier:"C",plan:432,q:7,r:430,note:"浙大附分校"},
-  {n:"杭四江东",cat:"重高",tier:"C",plan:432,q:7,r:450,note:"杭四集团"},
-  {n:"杭二东河",cat:"重高",tier:"C",plan:432,q:5,r:500,note:"杭二集团"},
-  {n:"杭二富春",cat:"重高",tier:"C",plan:432,q:4,r:480,note:"杭二集团"},
-  {n:"学军桐庐",cat:"重高",tier:"C",plan:432,q:4,r:500,note:"学军集团"},
-  {n:"十四青山湖",cat:"重高",tier:"C",plan:432,q:4,r:520,note:"十四中分校"},
-  {n:"长河二高",cat:"重高",tier:"C",plan:432,q:10,r:550,note:"长河分校"},
-  {n:"源清中学",cat:"优高",tier:"C",plan:480,q:8,r:600,note:"拱墅区优高"},
-  {n:"杭七转塘",cat:"优高",tier:"C",plan:480,q:5,r:650,note:"美术特色"},
-  {n:"杭师大附二中",cat:"优高",tier:"C",plan:432,q:8,r:680,note:"杭师附分校"},
-  {n:"源清二高",cat:"优高",tier:"C",plan:432,q:7,r:700,note:"源清分校"},
-  {n:"杭四吴山",cat:"优高",tier:"D",plan:432,q:4,r:750,note:"杭四分校"},
-  {n:"绿城育华",cat:"优高",tier:"D",plan:200,q:2,r:800,note:"民办 26000/学期"},
+  {n:"杭二中滨江",cat:"重高",plan:672,q:12,r:15,note:"杭州最顶尖"},
+  {n:"学军中学西溪",cat:"重高",plan:672,q:12,r:27,note:"竞赛强校"},
+  {n:"杭高贡院",cat:"重高",plan:624,q:12,r:73,note:"百年名校"},
+  {n:"学军紫金港",cat:"重高",plan:480,q:7,r:111,note:"学军新校区"},
+  {n:"十四凤起",cat:"重高",plan:576,q:11,r:159,note:"理科强校"},
+  {n:"杭四下沙",cat:"重高",plan:624,q:11,r:210,note:"国际化特色"},
+  {n:"浙大附玉泉",cat:"重高",plan:576,q:11,r:230,note:"浙大资源"},
+  {n:"杭师附中",cat:"重高",plan:528,q:13,r:250,note:"师范底子"},
+  {n:"长河高中",cat:"重高",plan:528,q:11,r:295,note:"可捡漏"},
+  {n:"杭高钱江",cat:"重高",plan:480,q:7,r:306,note:"可捡漏3分"},
+  {n:"杭二高新",cat:"重高",plan:864,q:9,r:null,note:"2026新增"},
+  {n:"浙大附实验",cat:"重高",plan:672,q:7,r:null,note:"2026新增"},
+  {n:"学军海创园",cat:"重高",plan:480,q:6,r:350,note:""},
+  {n:"杭二钱江",cat:"重高",plan:432,q:4,r:380,note:"杭二集团"},
+  {n:"杭高钱塘",cat:"重高",plan:480,q:10,r:370,note:"杭高集团"},
+  {n:"十四康桥",cat:"重高",plan:432,q:8,r:400,note:""},
+  {n:"杭二东河",cat:"重高",plan:432,q:5,r:500,note:"杭二集团"},
+  {n:"源清中学",cat:"优高",plan:480,q:8,r:600,note:"拱墅区优高"},
+  {n:"杭七转塘",cat:"优高",plan:480,q:5,r:650,note:"美术特色"},
+  {n:"杭师大附二中",cat:"优高",plan:432,q:8,r:680,note:""},
+  {n:"杭四吴山",cat:"优高",plan:432,q:4,r:750,note:""},
+  {n:"绿城育华",cat:"优高",plan:200,q:2,r:800,note:"民办 26000/学期"},
 ];
 
-// ═══════════════ 核心计算 ═══════════════
-function parseExams() {
-  const exams = [];
-  const inputs = [
-    {id:"e1",name:"九上期末"}, {id:"e2",name:"一模"},
-    {id:"e3",name:"二模"}, {id:"e4",name:"三模"}
+// ═══════════════ 核心算法 ═══════════════
+
+function parseInput(id) {
+  const v = document.getElementById(id).value.trim();
+  if (!v) return null;
+  const p = v.split("/");
+  if (p.length < 2) return null;
+  return {score:parseFloat(p[0]),total:parseInt(p[1]),rank:p.length>=3?parseInt(p[2]):null};
+}
+
+function computeInternalRank(inputs) {
+  // 十三中分配生算法：
+  // 学业成绩97% + 素质特长3%
+  // 初一20% + 初二30% + 初三(九上+一模)50%
+
+  const quality = parseFloat(document.getElementById("quality").value) || 0;
+  const qualityScore = Math.min(quality, 10) * 0.03;
+
+  let academicScore = 0;
+  let totalWeight = 0;
+
+  // 初一 20% (上下各10%)
+  if (inputs.g7a) { academicScore += (inputs.g7a.score/inputs.g7a.total) * 0.10; totalWeight += 0.10; }
+  if (inputs.g7b) { academicScore += (inputs.g7b.score/inputs.g7b.total) * 0.10; totalWeight += 0.10; }
+
+  // 初二 30% (上下各15%)
+  if (inputs.g8a) { academicScore += (inputs.g8a.score/inputs.g8a.total) * 0.15; totalWeight += 0.15; }
+  if (inputs.g8b) { academicScore += (inputs.g8b.score/inputs.g8b.total) * 0.15; totalWeight += 0.15; }
+
+  // 初三 50% (九上25% + 一模25%)
+  if (inputs.e9a) { academicScore += (inputs.e9a.score/inputs.e9a.total) * 0.25; totalWeight += 0.25; }
+  if (inputs.e1a) { academicScore += (inputs.e1a.score/inputs.e1a.total) * 0.25; totalWeight += 0.25; }
+
+  // 归一化
+  if (totalWeight > 0) academicScore = academicScore / totalWeight * 0.97;
+
+  return {internal: (academicScore + qualityScore) * 100, academic: academicScore * 100 / 0.97, quality: qualityScore * 100};
+}
+
+function predictScore(inputs) {
+  // 加权预测：一模×40% + 二模×30% + 三模×30%
+  // 如果缺某些模考，权重动态调整
+  let weightedPct = 0, totalW = 0;
+
+  const exams = [
+    {data:inputs.e1a, w:0.40},
+    {data:inputs.e2a, w:0.30},
+    {data:inputs.e3a, w:0.30},
   ];
-  for (let inp of inputs) {
-    const v = document.getElementById(inp.id).value.trim();
-    if (!v) continue;
-    const p = v.split("/");
-    if (p.length >= 3) {
-      exams.push({
-        name: inp.name,
-        score: parseFloat(p[0]),
-        total: parseInt(p[1]),
-        rank: parseInt(p[2]),
-        pct: parseFloat(p[0]) / parseInt(p[1])
-      });
+
+  for (let e of exams) {
+    if (e.data) { weightedPct += (e.data.score/e.data.total) * e.w; totalW += e.w; }
+  }
+
+  if (totalW === 0) {
+    // fallback: 线性回归
+    const pts = [];
+    if (inputs.e9a) pts.push({x:0, pct:inputs.e9a.score/inputs.e9a.total});
+    if (inputs.e1a) pts.push({x:1, pct:inputs.e1a.score/inputs.e1a.total});
+    if (inputs.e2a) pts.push({x:2, pct:inputs.e2a.score/inputs.e2a.total});
+    if (inputs.e3a) pts.push({x:3, pct:inputs.e3a.score/inputs.e3a.total});
+    if (pts.length >= 2) {
+      let n=pts.length,sx=0,sy=0,sxy=0,sx2=0;
+      for(let p of pts){sx+=p.x;sy+=p.pct;sxy+=p.x*p.pct;sx2+=p.x*p.x}
+      const slope=(n*sxy-sx*sy)/(n*sx2-sx*sx);
+      const intercept=(sy-slope*sx)/n;
+      weightedPct = intercept + slope * n;
+      totalW = 1;
     }
   }
-  return exams;
+
+  const pct = totalW > 0 ? weightedPct / totalW : 0.75;
+  const score = Math.round(pct * 650);
+  const margin = 8; // ±8分误差
+  return {score, low: score - margin, high: score + margin, pct};
 }
 
-function predict(exams) {
-  if (exams.length < 2) return null;
-  if (exams.length === 3 && exams[0].name === "九上期末" && exams[1].name === "一模" && exams[2].name === "二模") {
-    // Pre-set demo data
-  }
-  
-  const n = exams.length;
-  const xs = exams.map((_, i) => i);
-  const ys = exams.map(e => e.pct);
-  
-  let sx = 0, sy = 0, sxy = 0, sx2 = 0;
-  for (let i = 0; i < n; i++) {
-    sx += xs[i]; sy += ys[i]; sxy += xs[i] * ys[i]; sx2 += xs[i] * xs[i];
-  }
-  
-  const slope = (n * sxy - sx * sy) / (n * sx2 - sx * sx);
-  const intercept = (sy - slope * sx) / n;
-  const predPct = intercept + slope * n;
-  
-  // RMSE for confidence interval
-  let ssr = 0;
-  for (let i = 0; i < n; i++) {
-    const err = ys[i] - (intercept + slope * xs[i]);
-    ssr += err * err;
-  }
-  const rmse = Math.sqrt(ssr / n);
-  const ciLow = Math.max(0.3, predPct - 2 * rmse);
-  const ciHigh = Math.min(0.99, predPct + 2 * rmse);
-  
-  // Rank prediction
-  const ranks = exams.map(e => e.rank);
-  let rankSlope = 0;
+function predictRank(inputs, score) {
+  // 排名预测：基于一模/九上排名趋势 + 分数校准
+  const ranks = [];
+  if (inputs.e9a && inputs.e9a.rank) ranks.push(inputs.e9a.rank);
+  if (inputs.e1a && inputs.e1a.rank) ranks.push(inputs.e1a.rank);
+  if (inputs.e2a && inputs.e2a.rank) ranks.push(inputs.e2a.rank);
+
   if (ranks.length >= 2) {
+    // 排名趋势
     let dsum = 0;
     for (let i = 0; i < ranks.length - 1; i++) dsum += ranks[i] - ranks[i+1];
-    rankSlope = dsum / (ranks.length - 1);
+    const slope = dsum / (ranks.length - 1);
+    let estRank = Math.max(1, Math.round(ranks[ranks.length-1] + slope * 0.5));
+
+    // 用分数校准
+    if (score >= BENCHMARK_2025.top3_line) estRank = Math.min(estRank, BENCHMARK_2025.top3_count);
+    else if (score >= BENCHMARK_2025.zhonggao_line) estRank = Math.min(estRank, BENCHMARK_2025.zhonggao_count);
+
+    return Math.max(1, Math.min(SCHOOL.grade, estRank));
   }
-  const predRank = Math.max(1, Math.round(ranks[ranks.length-1] + rankSlope * 0.5));
-  
-  const cityAdv = SCHOOL.zhonggaoRate / 0.178;
-  const predCityPct = (predRank / SCHOOL.gradeSize) / cityAdv;
-  
-  return {
-    trend: slope > 0.005 ? "上升 📈" : slope < -0.005 ? "需关注 📉" : "稳定 ➡️",
-    score: Math.round(predPct * 650),
-    ciLow: Math.round(ciLow * 650),
-    ciHigh: Math.round(ciHigh * 650),
-    rank: predRank,
-    cityPct: (predCityPct * 100).toFixed(1),
-    slope: slope
-  };
+  return Math.round(SCHOOL.grade * (1 - score / 650));
 }
 
-function genQuotaPlans(rank, strategy) {
+function genPlans(rank, type, strategy) {
+  const maxN = type === "quota" ? 5 : 10;
   const plans = [];
+
   for (let s of SCHOOLS) {
-    if (!s.r || s.q <= 0) continue;
-    const diff = s.r - rank;
-    let tag, prob, cls;
-    if (rank <= s.r * 0.7) { tag = "🟢 稳"; prob = "高 >70%"; cls = "safe"; }
-    else if (rank <= s.r * 1.0) { tag = "🟡 冲"; prob = "中 40-70%"; cls = "risky"; }
-    else if (rank <= s.r * 1.4) { tag = "🔴 博"; prob = "低 15-40%"; cls = "dream"; }
+    if (!s.r && type === "quota") continue;
+    const refRank = s.r || (type === "central" ? SCHOOL.grade * (1 - s.plan / 5000) : 999);
+    const diff = refRank - rank;
+    let tag,prob,cls;
+
+    if (rank <= refRank * 0.7) { tag="🟢 稳"; prob=">70%"; cls="safe"; }
+    else if (rank <= refRank * 1.0) { tag="🟡 冲"; prob="40-70%"; cls="risky"; }
+    else if (rank <= refRank * 1.5) { tag="🔴 博"; prob="15-40%"; cls="dream"; }
     else continue;
-    plans.push({...s, tag, prob, cls, diff});
+
+    plans.push({...s, tag, prob, cls, diff, refRank});
   }
-  
-  const order = {"🟢 稳":0, "🟡 冲":1, "🔴 博":2};
-  plans.sort((a,b) => order[a.tag] - order[b.tag] || b.diff - a.diff);
-  
+
+  const order = {"🟢 稳":0,"🟡 冲":1,"🔴 博":2};
+  plans.sort((a,b) => order[a.tag]-order[b.tag] || b.diff-a.diff);
+
+  if (strategy === "safe") return plans.filter(p=>p.cls==="safe").slice(0,maxN);
   if (strategy === "aggressive") {
-    const r = plans.filter(p => p.cls === "risky" || p.cls === "dream");
-    const s = plans.filter(p => p.cls === "safe");
-    return [...r, ...s].slice(0, POLICY.quotaMax);
+    const r = plans.filter(p=>p.cls!=="safe");
+    const s = plans.filter(p=>p.cls==="safe");
+    return [...r,...s].slice(0,maxN);
   }
-  if (strategy === "safe") {
-    return plans.filter(p => p.cls === "safe").slice(0, POLICY.quotaMax);
-  }
-  return plans.slice(0, POLICY.quotaMax);
-}
-
-function genCentralPlans(rank) {
-  const cityAdv = SCHOOL.zhonggaoRate / 0.178;
-  const cityPct = (rank / SCHOOL.gradeSize) / cityAdv;
-  const plans = [];
-  
-  for (let s of SCHOOLS) {
-    const refRank = s.r || 999;
-    const scPct = refRank / SCHOOL.gradeSize / cityAdv;
-    let tag, prob, cls;
-    if (cityPct < scPct * 0.7) { tag = "🟢 保"; prob = ">85%"; cls = "safe"; }
-    else if (cityPct < scPct * 1.0) { tag = "🟡 稳"; prob = "55-85%"; cls = "safe"; }
-    else if (cityPct < scPct * 1.3) { tag = "🟠 冲"; prob = "25-55%"; cls = "risky"; }
-    else continue;
-    plans.push({...s, tag, prob, cls});
-  }
-  
-  plans.sort((a,b) => (a.r||999) - (b.r||999));
-  return plans.slice(0, POLICY.centralMax);
+  return plans.slice(0,maxN);
 }
 
 // ═══════════════ UI ═══════════════
 function analyze() {
-  const exams = parseExams();
-  
-  // 无输入时用示例数据
-  let dataExams = exams;
-  if (exams.length < 2) {
-    dataExams = [
-      {name:"九上期末",score:520,total:620,rank:310,pct:520/620},
-      {name:"一模",score:535,total:620,rank:285,pct:535/620},
-      {name:"二模",score:548,total:620,rank:260,pct:548/620},
-    ];
-    document.getElementById("e1").value = "520/620/310";
-    document.getElementById("e2").value = "535/620/285";
-    document.getElementById("e3").value = "548/620/260";
-  }
+  const inputs = {
+    g7a: parseInput("g7a"), g7b: parseInput("g7b"),
+    g8a: parseInput("g8a"), g8b: parseInput("g8b"),
+    e9a: parseInput("e9a"), e1a: parseInput("e1a"),
+    e2a: parseInput("e2a"), e3a: parseInput("e3a"),
+  };
 
-  const pred = predict(dataExams);
-  if (!pred) return;
+  // Demo if empty
+  if (!inputs.e1a && !inputs.e2a) {
+    document.getElementById("g7a").value = "440/500";
+    document.getElementById("g7b").value = "455/500";
+    document.getElementById("g8a").value = "460/520";
+    document.getElementById("g8b").value = "475/520";
+    document.getElementById("e9a").value = "520/620/310";
+    document.getElementById("e1a").value = "535/620/285";
+    document.getElementById("e2a").value = "548/620/260";
+    document.getElementById("e3a").value = "560/620/240";
+    return analyze();
+  }
 
   const strategy = document.getElementById("strategy").value;
 
-  // 显示预测
+  // 1. 校内分配生得分
+  const internalRank = computeInternalRank(inputs);
+  // 2. 中考分数预测
+  const pred = predictScore(inputs);
+  // 3. 排名预测
+  const rank = predictRank(inputs, pred.score);
+
+  // 显示
   document.getElementById("predCard").style.display = "block";
   document.getElementById("predScore").textContent = pred.score + " / 650";
-  document.getElementById("predRange").textContent = `置信区间: ${pred.ciLow} ~ ${pred.ciHigh} 分`;
-  document.getElementById("predRank").textContent = `第 ${pred.rank} 名`;
-  document.getElementById("predCity").textContent = `前 ${pred.cityPct}%`;
-  document.getElementById("predTrend").textContent = `成绩趋势: ${pred.trend}`;
+  document.getElementById("predRange").textContent = `置信区间: ${pred.low} ~ ${pred.high} 分 (±8分)`;
+  document.getElementById("predRank").textContent = `第 ${rank} 名`;
+  document.getElementById("zhonggaoChance").textContent =
+    rank <= SCHOOL.grade * SCHOOL.zhonggaoRate * 0.9 ? "80%+" :
+    rank <= SCHOOL.grade * SCHOOL.zhonggaoRate * 1.2 ? "50-80%" : "30-50%";
+  document.getElementById("quotaPos").textContent =
+    rank <= SCHOOL.quota2026 ? `区内(${Math.round(rank/SCHOOL.quota2026*100)}%)` : "集中招生";
 
-  // 概率指标
-  const zhonggaoRank = SCHOOL.gradeSize * SCHOOL.zhonggaoRate;
-  if (pred.rank <= zhonggaoRank * 0.8) {
-    document.getElementById("zhonggaoChance").textContent = "80%+";
-  } else if (pred.rank <= zhonggaoRank * 1.1) {
-    document.getElementById("zhonggaoChance").textContent = "55-80%";
-  } else if (pred.rank <= zhonggaoRank * 1.5) {
-    document.getElementById("zhonggaoChance").textContent = "30-55%";
-  } else {
-    document.getElementById("zhonggaoChance").textContent = "<30%";
-  }
-  
-  document.getElementById("yougaoChance").textContent = pred.rank <= SCHOOL.gradeSize * 0.6 ? "85%+" : "70%+";
-  
-  const quotaRankNeeded = SCHOOL.quota2026;
-  document.getElementById("quotaPos").textContent = pred.rank <= quotaRankNeeded ? 
-    `分配生区内 (${Math.round(pred.rank/quotaRankNeeded*100)}%)` : `需集中招生`;
+  document.getElementById("benchmark").innerHTML = `
+    📌 <strong>2025一模基准</strong> (校内):
+    前三线: ${BENCHMARK_2025.top3_line}分(前${BENCHMARK_2025.top3_count}名) |
+    重高线: ${BENCHMARK_2025.zhonggao_line}分(前${BENCHMARK_2025.zhonggao_count}名)
+    <br>📌 <strong>校内分配生综合得分</strong>: ${internalRank.internal.toFixed(1)}分
+    (学业${internalRank.academic.toFixed(1)} + 素质${internalRank.quality.toFixed(1)})
+    <br>📌 <strong>预测算法</strong>: 一模40% + 二模30% + 三模30% | 误差±8分
+  `;
 
   // 生成方案
-  const quotaPlans = genQuotaPlans(pred.rank, strategy);
-  const centralPlans = genCentralPlans(pred.rank);
-
   document.getElementById("plansArea").style.display = "block";
-  renderPlans("quotaPlans", quotaPlans, "quota");
-  renderPlans("centralPlans", centralPlans, "central");
+  const quotaPlans = genPlans(rank, "quota", strategy);
+  const centralPlans = genPlans(rank, "central", strategy);
+  renderPlans("quotaPlans", quotaPlans);
+  renderPlans("centralPlans", centralPlans);
 
   // 提醒
   document.getElementById("reminder").style.display = "block";
-  document.getElementById("reminder").innerHTML = `
-    ⚠️ <strong>重要提醒</strong><br>
-    • 填报时间: ${POLICY.applyDate}<br>
-    • 填报入口: ${POLICY.systemUrl} （填报后不可修改）<br>
+  document.getElementById("reminderText").innerHTML = `
+    • 填报: 5月29日 8:00 ~ 5月30日 18:00 (www.hzjyks.net) · 不可修改<br>
     • 分配生需综评3A + 连续三年在读<br>
     • 同分排序: 语文数学 → 英语 → 科学 → 社会<br>
-    • 5月初关注学校公示的正式分配方案<br>
-    • 新增学校（杭二高新、浙大附实验）无历史数据，参考位次为估算
+    • 任何预测有误差，建议上下浮动5-10分作为安全区间<br>
+    • 一模最重要(难度最大覆盖最全)，二模定档次，三模稳心态
   `;
 }
 
-function renderPlans(id, plans, type) {
+function renderPlans(id, plans) {
   const container = document.getElementById(id);
-  if (plans.length === 0) {
-    container.innerHTML = '<div class="placeholder-text">暂无匹配方案，请调整成绩输入</div>';
-    return;
-  }
-  
-  let html = "";
-  plans.forEach((p, i) => {
-    const numCls = p.cls === "dream" ? "dream" : p.cls === "risky" ? "risky" : "safe";
-    const tagCls = p.cls === "dream" ? "tag-dream" : p.cls === "risky" ? "tag-risky" : "tag-safe";
-    const typeLabel = type === "quota" ? `名额: ${p.q}人` : `计划: ${p.plan}人`;
-    const refLabel = p.r ? `参考位次: 前${p.r}名(2025)` : "2026新增，参考位次待定";
-    
-    html += `
-      <div class="plan-item">
-        <div class="plan-num ${numCls}">${i+1}</div>
-        <div class="plan-info">
-          <div class="school">${p.n} <span style="font-size:12px;color:#888">${p.cat}·${p.tier}级</span></div>
-          <div class="detail">${typeLabel} | ${refLabel} | ${p.prob}</div>
-          <div class="detail" style="color:#666">${p.note}</div>
-        </div>
-        <div class="plan-tag ${tagCls}">${p.tag}</div>
+  if (!plans.length) { container.innerHTML='<div class="plan-item"><div class="plan-info" style="text-align:center;color:#999;padding:16px">暂无匹配方案</div></div>'; return; }
+  container.innerHTML = plans.map((p,i)=>{
+    const cls = p.cls === "dream" ? "dream" : p.cls === "risky" ? "risky" : "safe";
+    const tc = p.cls === "dream" ? "tag-dream" : p.cls === "risky" ? "tag-risky" : "tag-safe";
+    return `<div class="plan-item">
+      <div class="plan-num ${cls}">${i+1}</div>
+      <div class="plan-info">
+        <div class="school">${p.n} <span style="font-size:11px;color:#999">${p.cat}</span></div>
+        <div class="detail">名额: ${p.q}人 | 参考位次: 前${p.r||"?"}名(2025) | ${p.prob} | ${p.note}</div>
       </div>
-    `;
-  });
-  container.innerHTML = html;
+      <div class="plan-tag ${tc}">${p.tag}</div>
+    </div>`;
+  }).join("");
 }
 
-function switchTab(tab) {
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  if (tab === "quota") {
-    document.querySelectorAll(".tab")[0].classList.add("active");
-    document.getElementById("quotaPlans").style.display = "block";
-    document.getElementById("centralPlans").style.display = "none";
-  } else {
-    document.querySelectorAll(".tab")[1].classList.add("active");
-    document.getElementById("quotaPlans").style.display = "none";
-    document.getElementById("centralPlans").style.display = "block";
-  }
+function switchTab(t) {
+  document.querySelectorAll(".tab").forEach((b,i)=>b.classList.toggle("active",(t==="quota"&&i===0)||(t==="central"&&i===1)));
+  document.getElementById("quotaPlans").style.display = t==="quota"?"block":"none";
+  document.getElementById("centralPlans").style.display = t==="central"?"block":"none";
 }
 
-// 页面加载时自动运行示例
 window.onload = () => analyze();
 </script>
-
 </body>
 </html>
