@@ -320,8 +320,11 @@ function genCentralPlans(inputs, histBest, histWorst) {
   // #8: 下限学校
   addPlan(lowerSchool, 8, "🟢 保", `最低排名(${worstRank}名)也稳`);
 
-  // #9-10: 低于下限的保底（lowerIdx 之后最近2所）
-  const safety = ranked.slice(lowerIdx + 1, lowerIdx + 3);
+  // #9-10: 保底不低过头——最多比下限多取2所，且不超过当前模考排名+120
+  const examRanks2 = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
+    .filter(d => d && d.rank).map(d => d.rank);
+  const curLevel = examRanks2.length ? examRanks2[examRanks2.length - 1] : worstRank;
+  const safety = ranked.slice(lowerIdx + 1).filter(s => s.r <= curLevel + 120).slice(0, 2);
   safety.forEach((s, i) => addPlan(s, 9 + i, "🟢 保底", "绝对安全"));
 
   return plans.slice(0, 10);
