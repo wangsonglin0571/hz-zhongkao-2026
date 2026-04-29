@@ -232,12 +232,13 @@ function genQuotaPlans(rank) {
   const startIdx = Math.max(0, ceilingIdx - 3);
   const candidates = ranked.slice(startIdx, startIdx + 8); // 多取几个备选
 
-  // 按与rank的差距排序：差距小（接近）的优先
-  candidates.sort((a,b) => Math.abs(a.r - rank) - Math.abs(b.r - rank));
-
-  const selected = candidates.slice(0, 5);
+  // 取差距±80名以内的学校，不硬凑5个
+  const maxGap = 80;
+  const inRange = candidates.filter(s => Math.abs(s.r - rank) <= maxGap);
   // 按学校质量重排（好的在前）
-  selected.sort((a,b) => a.r - b.r);
+  inRange.sort((a,b) => a.r - b.r);
+
+  const selected = inRange.slice(0, 5);
 
   selected.forEach((s, i) => {
     const gap = s.r - rank; // 正=你领先参考位次, 负=你落后
