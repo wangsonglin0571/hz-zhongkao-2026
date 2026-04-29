@@ -242,34 +242,52 @@ function predictRank(inputs, score) {
 
 // ═══════════════ 冲重高 / 稳优高 定制算法 ═══════════════
 function genQuotaPlans(rank) {
-  // 分配生：校内竞争，看校内年排 vs 学校录取参考位次
+  // 分配生激进策略：十三中竞争激烈，保守=浪费机会
+  // 5个志愿全力冲刺，只留最后一个兜底
   const plans = [];
   const quotaLine = SCHOOL.quota2026; // 229名
   const zhonggaoLine = Math.round(SCHOOL.grade * SCHOOL.zhonggaoRate); // 324名
 
-  for (let s of SCHOOLS) {
-    if (!s.r || s.q <= 0) continue;
-    const gap = s.r - rank; // 正数=你在参考位次之上, 负数=你落后
+  // 只取有校排参考+有名额的学校，按质量排序（r越小越好）
+  const ranked = SCHOOLS.filter(s => s.r !== null && s.q > 0).sort((a,b) => a.r - b.r);
 
-    let tier, priority;
-    if (gap >= 30)        { tier="🟢 稳"; priority=0; }  // 超出参考位次30名以上
-    else if (gap >= 0)    { tier="🟡 冲"; priority=1; }  // 在参考位次上方但≤30名
-    else if (gap >= -50)  { tier="🔴 搏"; priority=2; }  // 略低于参考位次，需搏
-    else continue; // 差太远不推荐
+  // 找到学生排名附近的"天花板"：第一个 r <= rank 的学校（最好能摸到的）
+  let ceilingIdx = ranked.findIndex(s => s.r >= rank);
+  if (ceilingIdx === -1) ceilingIdx = ranked.length - 1;
 
-    // 重高率校准：如果你在重高线以内，可以冲更高
-    const isZhonggaoZone = rank <= zhonggaoLine;
+  // 激进窗口：从天花板往前3所（更好但需搏）+ 天花板 + 往后取满5
+  const startIdx = Math.max(0, ceilingIdx - 3);
+  const candidates = ranked.slice(startIdx, startIdx + 8); // 多取几个备选
 
-    plans.push({
-      ...s, tier, priority, gap,
-      advice: tier === "🟢 稳" ? "正常发挥可录"
-            : tier === "🟡 冲" ? (isZhonggaoZone ? "重高区内，有优势" : "需超常发挥")
-            : "需要搏一搏，建议对比集中招生"
-    });
+  // 按与rank的差距排序：差距小（接近）的优先
+  candidates.sort((a,b) => Math.abs(a.r - rank) - Math.abs(b.r - rank));
+
+  const selected = candidates.slice(0, 5);
+  // 按学校质量重排（好的在前）
+  selected.sort((a,b) => a.r - b.r);
+
+  selected.forEach((s, i) => {
+    const gap = s.r - rank; // 正=你领先参考位次, 负=你落后
+    let tier;
+    if (i === 0)             tier = "🔴 搏上限";    // 最好的，全力搏
+    else if (i <= 2)         tier = "🟠 冲";         // 前3冲
+    else if (i === 3)        tier = "🟡 冲稳";       // 第4过渡
+    else                     tier = "🟢 兜底";        // 最后一个保底
+
+    plans.push({...s, tier, priority: i, gap,
+      advice: tier === "🔴 搏上限" ? "梦想校，发挥好就是你的" :
+              tier === "🟠 冲" ? "竞争激烈但值得搏" :
+              tier === "🟡 冲稳" ? "正常发挥大概率进" :
+              "防线校，稳住心态"});
+  });
+
+  // 确保最后一个确实是安全校
+  if (plans.length === 5 && plans[4].r > rank + 30) {
+    plans[4].tier = "🟢 兜底";
+    plans[4].advice = "防线校，稳住心态";
   }
 
-  plans.sort((a,b) => a.priority - b.priority || b.gap - a.gap);
-  return plans.slice(0, 5);
+  return plans;
 }
 
 function genCentralPlans(inputs) {
