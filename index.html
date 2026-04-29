@@ -395,7 +395,7 @@ function analyze() {
   // 显示 - 排名为中心
   document.getElementById("predCard").style.display = "block";
   document.getElementById("predRank").textContent = `第 ${rank} 名`;
-  document.getElementById("predScore").textContent = `估测 ${pred.score} / 650 (±8分) | 排名区间 ${rankBest}~${rankWorst}`;
+  document.getElementById("predScore").textContent = `估测 ${pred.score - 30} / 620 (±8分) | 排名区间 ${rankBest}~${rankWorst}`;
 
   const quotaNeeded = Math.round(SCHOOL.grade * SCHOOL.zhonggaoRate);
   document.getElementById("zhonggaoChance").textContent =
