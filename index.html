@@ -181,43 +181,26 @@ function computeInternalRank(inputs) {
 }
 
 function predictScore(inputs) {
-  // 加权预测：一模×40% + 二模×30% + 三模×30%
-  // 体育默认满分30，模考分(满分≤620)自动补体育
-  let weightedScore = 0, totalW = 0;
+  // 中考分数接近九上（得分率极高），模考更多是排名参考
+  // 有九上用九上，否则取模考均值
+  let baseScore = 0, count = 0;
 
-  const exams = [
-    {data:inputs.e1a, w:0.40},
-    {data:inputs.e2a, w:0.30},
-    {data:inputs.e3a, w:0.30},
-  ];
-
-  for (let e of exams) {
-    if (e.data) {
-      const sc = e.data.total <= 620 ? e.data.score + 30 : e.data.score;
-      weightedScore += sc * e.w; totalW += e.w;
-    }
+  if (inputs.e9a) {
+    const sc = inputs.e9a.total <= 620 ? inputs.e9a.score + 30 : inputs.e9a.score;
+    baseScore = sc; count = 1;
   }
 
-  if (totalW === 0) {
-    // fallback: 线性回归（基于百分比，与总分无关）
-    const pts = [];
-    if (inputs.e9a) pts.push({x:0, pct:inputs.e9a.score/inputs.e9a.total});
-    if (inputs.e1a) pts.push({x:1, pct:inputs.e1a.score/inputs.e1a.total});
-    if (inputs.e2a) pts.push({x:2, pct:inputs.e2a.score/inputs.e2a.total});
-    if (inputs.e3a) pts.push({x:3, pct:inputs.e3a.score/inputs.e3a.total});
-    if (pts.length >= 2) {
-      let n=pts.length,sx=0,sy=0,sxy=0,sx2=0;
-      for(let p of pts){sx+=p.x;sy+=p.pct;sxy+=p.x*p.pct;sx2+=p.x*p.x}
-      const slope=(n*sxy-sx*sy)/(n*sx2-sx*sx);
-      const intercept=(sy-slope*sx)/n;
-      weightedScore = (intercept + slope * n) * 650;
-      totalW = 1;
+  // 一模二模三模微调（±5分范围内修正）
+  [inputs.e1a, inputs.e2a, inputs.e3a].forEach(d => {
+    if (d && d.rank) {
+      const sc = d.total <= 620 ? d.score + 30 : d.score;
+      if (count === 0) { baseScore = sc; count = 1; }
+      else { baseScore = baseScore * 0.7 + sc * 0.3; } // 九上为主，模考微调
     }
-  }
+  });
 
-  const score = totalW > 0 ? Math.round(weightedScore / totalW) : Math.round(0.75 * 650);
-  const margin = 8;
-  return {score, low: score - margin, high: score + margin, pct: score / 650};
+  const score = count > 0 ? Math.round(baseScore) : Math.round(0.75 * 650);
+  return {score, low: score - 8, high: score + 8, pct: score / 650};
 }
 
 function predictRank(inputs, score) {
@@ -367,9 +350,9 @@ function analyze() {
   // Demo if empty
   if (!inputs.e1a && !inputs.e2a) {
     document.getElementById("e9a").value = "584/620/399";
-    document.getElementById("e1a").value = "528/620/430";
-    document.getElementById("e2a").value = "545/620/390";
-    document.getElementById("e3a").value = "558/620/355";
+    document.getElementById("e1a").value = "582/620/410";
+    document.getElementById("e2a").value = "586/620/390";
+    document.getElementById("e3a").value = "590/620/380";
     document.getElementById("bestRank").value = "215";
     document.getElementById("worstRank").value = "591";
     return analyze();
