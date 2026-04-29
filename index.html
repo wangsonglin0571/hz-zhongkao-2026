@@ -133,9 +133,6 @@ input:focus{border-color:#1a73e8;outline:none}
 const SCHOOL = {name:"杭州十三中",grade:1132,quota2026:229,zhonggaoRate:0.2864,yougaoRate:0.71};
 const CALIBRATION = {grade7Total:500,grade8Total:520,grade9aTotal:620,mockTotal:620};
 
-// 2025 一模基准（用于校准）
-const BENCHMARK_2025 = {top3_line:582, top3_count:112, zhonggao_line:565, zhonggao_count:354};
-
 const SCHOOLS = [
   // ═══ 重高（老牌）— 按2025分数线排序 ═══
   {n:"杭二中滨江",cat:"重高（老牌）",plan:672,q:12,r:15,cutoff:630,note:"杭州最顶尖"},
@@ -204,27 +201,16 @@ function predictScore(inputs) {
 }
 
 function predictRank(inputs, score) {
-  // 排名预测：直接取最近一次考试排名（用户自己填的最准）
-  const ranks = [];
-  if (inputs.e9a && inputs.e9a.rank) ranks.push(inputs.e9a.rank);
-  if (inputs.e1a && inputs.e1a.rank) ranks.push(inputs.e1a.rank);
-  if (inputs.e2a && inputs.e2a.rank) ranks.push(inputs.e2a.rank);
-  if (inputs.e3a && inputs.e3a.rank) ranks.push(inputs.e3a.rank);
+  // 排名预测：以输入校排为准，分数仅做兜底
+  const ranks = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
+    .filter(d => d && d.rank).map(d => d.rank);
 
   if (ranks.length === 0) {
     return Math.round(SCHOOL.grade * (1 - score / 650));
   }
 
-  // 最新排名 = 综合预测
-  let estRank = ranks[ranks.length - 1];
-
-  estRank = Math.max(1, estRank);
-
-  // 用分数校准上限
-  if (score >= BENCHMARK_2025.top3_line) estRank = Math.min(estRank, BENCHMARK_2025.top3_count);
-  else if (score >= BENCHMARK_2025.zhonggao_line) estRank = Math.min(estRank, BENCHMARK_2025.zhonggao_count);
-
-  return Math.min(SCHOOL.grade, estRank);
+  // 取最近一次模考排名（最后填的那个）
+  return ranks[ranks.length - 1];
 }
 
 // ═══════════════ 冲重高 / 稳优高 定制算法 ═══════════════
