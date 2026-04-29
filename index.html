@@ -408,7 +408,7 @@ function analyze() {
   document.getElementById("benchmark").innerHTML = `
     📌 <strong>排名对照</strong>:
     重高线: 前${quotaNeeded}名(28.6%) |
-    分配生线: 前${SCHOOL.quota2026}名
+    分配生总名额: ${SCHOOL.quota2026}个（含重高+优高）
     <br>📌 <strong>集中招生区间</strong>: 最高排名${rankBest} → 上限第3志愿 | 最低排名${rankWorst} → 下限第8志愿
     ${histBest ? `<br>📌 <strong>三年历史</strong>: 🏆最高${histBest}名 | ⚠️最低${histWorst}名 → 志愿上下限以此为准` : ''}
     <br>📌 <strong>2026新规</strong>: 分配生只看中考分数+年排，平行志愿投档
