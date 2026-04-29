@@ -218,26 +218,27 @@ function predictScore(inputs) {
 }
 
 function predictRank(inputs, score) {
-  // 排名预测：基于一模/九上排名趋势 + 分数校准
+  // 排名预测：直接取最近一次考试排名（用户自己填的最准）
   const ranks = [];
   if (inputs.e9a && inputs.e9a.rank) ranks.push(inputs.e9a.rank);
   if (inputs.e1a && inputs.e1a.rank) ranks.push(inputs.e1a.rank);
   if (inputs.e2a && inputs.e2a.rank) ranks.push(inputs.e2a.rank);
+  if (inputs.e3a && inputs.e3a.rank) ranks.push(inputs.e3a.rank);
 
-  if (ranks.length >= 2) {
-    // 排名趋势
-    let dsum = 0;
-    for (let i = 0; i < ranks.length - 1; i++) dsum += ranks[i] - ranks[i+1];
-    const slope = dsum / (ranks.length - 1);
-    let estRank = Math.max(1, Math.round(ranks[ranks.length-1] + slope * 0.5));
-
-    // 用分数校准
-    if (score >= BENCHMARK_2025.top3_line) estRank = Math.min(estRank, BENCHMARK_2025.top3_count);
-    else if (score >= BENCHMARK_2025.zhonggao_line) estRank = Math.min(estRank, BENCHMARK_2025.zhonggao_count);
-
-    return Math.max(1, Math.min(SCHOOL.grade, estRank));
+  if (ranks.length === 0) {
+    return Math.round(SCHOOL.grade * (1 - score / 650));
   }
-  return Math.round(SCHOOL.grade * (1 - score / 650));
+
+  // 最新排名 = 综合预测
+  let estRank = ranks[ranks.length - 1];
+
+  estRank = Math.max(1, estRank);
+
+  // 用分数校准上限
+  if (score >= BENCHMARK_2025.top3_line) estRank = Math.min(estRank, BENCHMARK_2025.top3_count);
+  else if (score >= BENCHMARK_2025.zhonggao_line) estRank = Math.min(estRank, BENCHMARK_2025.zhonggao_count);
+
+  return Math.min(SCHOOL.grade, estRank);
 }
 
 // ═══════════════ 冲重高 / 稳优高 定制算法 ═══════════════
