@@ -61,21 +61,19 @@ input:focus{border-color:#1a73e8;outline:none}
 <div class="container">
 <div class="header">
   <h1>🎓 杭州2026中考志愿填报</h1>
-  <p>杭州十三中专属 · 基于校内分配生算法 + 加权预测</p>
+  <p>杭州十三中专属 · 校排定志愿 · 区间定上限/下限</p>
 </div>
 
 <!-- 成绩输入 -->
 <div class="card" id="inputCard">
-  <div class="section-label">📊 区统考（可横向比较 · 最可靠）</div>
+  <div class="section-label">📊 模考成绩（得分/总分/校排）</div>
   <div class="row">
-    <div class="col"><label>九上期末 得分/总分/年排 ⭐</label><input id="e9a" placeholder="如 520/620/310"></div>
-    <div class="col"><label>一模 得分/总分/年排 ⭐⭐</label><input id="e1a" placeholder="如 535/620/285"></div>
+    <div class="col"><label>九上期末</label><input id="e9a" placeholder="如 584/650/399"></div>
+    <div class="col"><label>一模</label><input id="e1a" placeholder="如 535/650/380"></div>
   </div>
-
-  <div class="section-label">📝 校统考（看趋势 · 年排始终是锚）</div>
   <div class="row">
-    <div class="col"><label>二模 得分/总分/年排</label><input id="e2a" placeholder="如 548/620/260"></div>
-    <div class="col"><label>三模 得分/总分/年排</label><input id="e3a" placeholder="如 560/620/240"></div>
+    <div class="col"><label>二模</label><input id="e2a" placeholder="如 548/650/360"></div>
+    <div class="col"><label>三模</label><input id="e3a" placeholder="如 560/650/340"></div>
   </div>
 
   <div class="section-label">策略偏好</div>
@@ -419,7 +417,7 @@ function analyze() {
     • 分配生需综评3A + 连续三年在读<br>
     • 同分排序: 语文数学 → 英语 → 科学 → 社会<br>
     • 任何预测有误差，建议上下浮动5-10分作为安全区间<br>
-    • 一模最重要(难度最大覆盖最全)，二模定档次，三模稳心态
+    • 一模最重要(难度最大)，二模定档次，三模稳心态<br>
   `;
 }
 
