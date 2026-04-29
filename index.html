@@ -68,12 +68,12 @@ input:focus{border-color:#1a73e8;outline:none}
 <div class="card" id="inputCard">
   <div class="section-label">📊 模考成绩（得分/总分/校排）</div>
   <div class="row">
-    <div class="col"><label>九上期末</label><input id="e9a" placeholder="如 584/650/399"></div>
-    <div class="col"><label>一模</label><input id="e1a" placeholder="如 535/650/380"></div>
+    <div class="col"><label>九上期末</label><input id="e9a" placeholder="如 584/620/399"></div>
+    <div class="col"><label>一模</label><input id="e1a" placeholder="如 535/620/380"></div>
   </div>
   <div class="row">
-    <div class="col"><label>二模</label><input id="e2a" placeholder="如 548/650/360"></div>
-    <div class="col"><label>三模</label><input id="e3a" placeholder="如 560/650/340"></div>
+    <div class="col"><label>二模</label><input id="e2a" placeholder="如 548/620/360"></div>
+    <div class="col"><label>三模</label><input id="e3a" placeholder="如 560/620/340"></div>
   </div>
 
   <div class="section-label">📈 三年历史排名（定志愿区间上下限）</div>
@@ -182,8 +182,8 @@ function computeInternalRank(inputs) {
 
 function predictScore(inputs) {
   // 加权预测：一模×40% + 二模×30% + 三模×30%
-  // 如果缺某些模考，权重动态调整
-  let weightedPct = 0, totalW = 0;
+  // 体育默认满分30，模考分(满分≤620)自动补体育
+  let weightedScore = 0, totalW = 0;
 
   const exams = [
     {data:inputs.e1a, w:0.40},
@@ -192,11 +192,14 @@ function predictScore(inputs) {
   ];
 
   for (let e of exams) {
-    if (e.data) { weightedPct += (e.data.score/e.data.total) * e.w; totalW += e.w; }
+    if (e.data) {
+      const sc = e.data.total <= 620 ? e.data.score + 30 : e.data.score;
+      weightedScore += sc * e.w; totalW += e.w;
+    }
   }
 
   if (totalW === 0) {
-    // fallback: 线性回归
+    // fallback: 线性回归（基于百分比，与总分无关）
     const pts = [];
     if (inputs.e9a) pts.push({x:0, pct:inputs.e9a.score/inputs.e9a.total});
     if (inputs.e1a) pts.push({x:1, pct:inputs.e1a.score/inputs.e1a.total});
@@ -207,15 +210,14 @@ function predictScore(inputs) {
       for(let p of pts){sx+=p.x;sy+=p.pct;sxy+=p.x*p.pct;sx2+=p.x*p.x}
       const slope=(n*sxy-sx*sy)/(n*sx2-sx*sx);
       const intercept=(sy-slope*sx)/n;
-      weightedPct = intercept + slope * n;
+      weightedScore = (intercept + slope * n) * 650;
       totalW = 1;
     }
   }
 
-  const pct = totalW > 0 ? weightedPct / totalW : 0.75;
-  const score = Math.round(pct * 650);
-  const margin = 8; // ±8分误差
-  return {score, low: score - margin, high: score + margin, pct};
+  const score = totalW > 0 ? Math.round(weightedScore / totalW) : Math.round(0.75 * 650);
+  const margin = 8;
+  return {score, low: score - margin, high: score + margin, pct: score / 650};
 }
 
 function predictRank(inputs, score) {
@@ -364,10 +366,10 @@ function analyze() {
 
   // Demo if empty
   if (!inputs.e1a && !inputs.e2a) {
-    document.getElementById("e9a").value = "584/650/399";
-    document.getElementById("e1a").value = "528/650/430";
-    document.getElementById("e2a").value = "545/650/390";
-    document.getElementById("e3a").value = "558/650/355";
+    document.getElementById("e9a").value = "584/620/399";
+    document.getElementById("e1a").value = "528/620/430";
+    document.getElementById("e2a").value = "545/620/390";
+    document.getElementById("e3a").value = "558/620/355";
     document.getElementById("bestRank").value = "215";
     document.getElementById("worstRank").value = "591";
     return analyze();
