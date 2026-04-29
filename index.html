@@ -272,27 +272,65 @@ function genQuotaPlans(rank) {
   return plans.slice(0, 5);
 }
 
-function genCentralPlans(rank) {
-  // 集中招生：全市竞争，十三中学生实际水平高于全市平均
-  const cityAdv = SCHOOL.zhonggaoRate / 0.178; // 十三中优势系数 ~1.6
-  const estCityPct = (rank / SCHOOL.grade) / cityAdv;
+function genCentralPlans(inputs) {
+  // 集中招生：以初中三年最高/最低排名定志愿上下限
+  // 上限放第3志愿，下限放第8志愿
+  const allRanks = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
+    .filter(d => d && d.rank).map(d => d.rank);
+  
+  if (allRanks.length === 0) return [];
+
+  const bestRank = Math.min(...allRanks);   // 最高排名（数字最小）
+  const worstRank = Math.max(...allRanks);  // 最低排名（数字最大）
+
+  // 按 r（校排参考）排序的学校列表（只取有 r 值的）
+  const ranked = SCHOOLS.filter(s => s.r !== null).sort((a,b) => a.r - b.r);
+
+  // 上限：bestRank 能进入的最好学校 → 第3志愿
+  const upperCandidates = ranked.filter(s => s.r >= bestRank);
+  const upperSchool = upperCandidates[0] || ranked[ranked.length-1];
+
+  // 下限：worstRank 也能稳进的学校 → 第8志愿
+  const lowerCandidates = ranked.filter(s => s.r >= worstRank);
+  const lowerSchool = lowerCandidates[0] || ranked[ranked.length-1];
+
+  // 构建 10 个志愿
   const plans = [];
+  const used = new Set();
 
-  for (let s of SCHOOLS) {
-    const refRank = s.r || SCHOOL.grade * (1 - estCityPct + 0.1);
-    const cityRefPct = (refRank / SCHOOL.grade) / cityAdv;
-    const gap = cityRefPct - estCityPct;
-
-    let tier, priority;
-    if (gap < -0.02)      { tier="🟢 保"; priority=0; }
-    else if (gap <= 0.02) { tier="🟡 稳"; priority=1; }
-    else if (gap <= 0.06) { tier="🟠 冲"; priority=2; }
-    else continue;
-
-    plans.push({...s, tier, priority, gap: Math.round(gap*1000)/10});
+  function addPlan(school, pos, tier, advice) {
+    if (!school || used.has(school.n)) return;
+    used.add(school.n);
+    plans.push({...school, pos, tier, advice, gap: school.r ? school.r - bestRank : null});
   }
 
-  plans.sort((a,b) => a.priority - b.priority || a.gap - b.gap);
+  // 找到 upperSchool 和 lowerSchool 在 ranked 中的索引
+  const upperIdx = ranked.findIndex(s => s.n === upperSchool.n);
+  const lowerIdx = ranked.findIndex(s => s.n === lowerSchool.n);
+
+  // #1-2: 高于上限的冲一冲（upperIdx 之前的学校，逆序取最近2个）
+  const stretch = ranked.slice(0, upperIdx).reverse().slice(0, 2);
+  stretch.forEach((s, i) => addPlan(s, i+1, "🔴 冲", "超常发挥有望"));
+
+  // #3: 上限学校
+  addPlan(upperSchool, 3, "🟡 冲稳", `最高排名(${bestRank}名)可达`);
+
+  // #4-7: 上下限之间的梯度（均匀取4所）
+  if (upperIdx < lowerIdx) {
+    const middle = ranked.slice(upperIdx + 1, lowerIdx);
+    const step = Math.max(1, Math.floor(middle.length / 4));
+    for (let i = 0; i < 4 && i * step < middle.length; i++) {
+      addPlan(middle[i * step], 4 + i, "🟢 稳", "正常发挥区间");
+    }
+  }
+
+  // #8: 下限学校
+  addPlan(lowerSchool, 8, "🟢 保", `最低排名(${worstRank}名)也稳`);
+
+  // #9-10: 低于下限的保底（lowerIdx 之后最近2所）
+  const safety = ranked.slice(lowerIdx + 1, lowerIdx + 3);
+  safety.forEach((s, i) => addPlan(s, 9 + i, "🟢 保底", "绝对安全"));
+
   return plans.slice(0, 10);
 }
 
@@ -321,10 +359,16 @@ function analyze() {
   // 3. 排名预测
   const rank = predictRank(inputs, pred.score);
 
+  // 3b. 集中招生排名区间
+  const allRanks = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
+    .filter(d => d && d.rank).map(d => d.rank);
+  const rankBest = allRanks.length ? Math.min(...allRanks) : rank;
+  const rankWorst = allRanks.length ? Math.max(...allRanks) : rank;
+
   // 显示 - 排名为中心
   document.getElementById("predCard").style.display = "block";
   document.getElementById("predRank").textContent = `第 ${rank} 名`;
-  document.getElementById("predScore").textContent = `估测 ${pred.score} / 650 (±8分)`;
+  document.getElementById("predScore").textContent = `估测 ${pred.score} / 650 (±8分) | 排名区间 ${rankBest}~${rankWorst}`;
 
   const quotaNeeded = Math.round(SCHOOL.grade * SCHOOL.zhonggaoRate);
   document.getElementById("zhonggaoChance").textContent =
@@ -338,13 +382,14 @@ function analyze() {
     📌 <strong>排名对照</strong>:
     重高线: 前${quotaNeeded}名(28.6%) |
     分配生线: 前${SCHOOL.quota2026}名
+    <br>📌 <strong>集中招生区间</strong>: 最高排名${rankBest} → 上限第3志愿 | 最低排名${rankWorst} → 下限第8志愿
     <br>📌 <strong>2026新规</strong>: 分配生只看中考分数+年排，平行志愿投档
   `;
 
   // 生成方案
   document.getElementById("plansArea").style.display = "block";
   const quotaPlans = genQuotaPlans(rank);
-  const centralPlans = genCentralPlans(rank);
+  const centralPlans = genCentralPlans(inputs);
   renderPlans("quotaPlans", quotaPlans);
   renderPlans("centralPlans", centralPlans);
 
@@ -363,11 +408,12 @@ function renderPlans(id, plans) {
   const container = document.getElementById(id);
   if (!plans.length) { container.innerHTML='<div class="plan-item"><div class="plan-info" style="text-align:center;color:#999;padding:16px">暂无匹配方案</div></div>'; return; }
   container.innerHTML = plans.map((p,i)=>{
-    const cls = p.tier === "🔴 搏" || p.tier === "🟠 冲" ? "dream" : p.tier === "🟡 冲" || p.tier === "🟡 稳" ? "risky" : "safe";
+    const pos = p.pos || (i+1);
+    const cls = p.tier && p.tier.includes("冲") ? "dream" : p.tier && p.tier.includes("保") ? "safe" : "risky";
     const tc = cls === "dream" ? "tag-dream" : cls === "risky" ? "tag-risky" : "tag-safe";
-    const gapInfo = p.gap > 0 ? `+${p.gap}名` : `${p.gap}名`;
+    const gapInfo = p.gap !== null && p.gap !== undefined ? (p.gap > 0 ? `+${p.gap}名` : `${p.gap}名`) : "—";
     return `<div class="plan-item">
-      <div class="plan-num ${cls}">${i+1}</div>
+      <div class="plan-num ${cls}">${pos}</div>
       <div class="plan-info">
         <div class="school">${p.n} <span style="font-size:11px;color:#999">${p.cat}·${p.tier||""}级</span></div>
         <div class="detail">名额: ${p.q||p.plan}人 | 校排参考: 前${p.r||"?"}名 | 差距: ${gapInfo}${p.cutoff ? ` | 分数线: ${p.cutoff}` : ''}</div>
