@@ -66,18 +66,6 @@ input:focus{border-color:#1a73e8;outline:none}
 
 <!-- 成绩输入 -->
 <div class="card" id="inputCard">
-  <h2>📊 成绩输入 <span style="font-size:11px;color:#888;font-weight:normal">（校内算法需要初一初二数据）</span></h2>
-
-  <div class="section-label">初一初二（用于校内分配生排名）</div>
-  <div class="row" style="margin-bottom:6px">
-    <div class="col"><label>初一上 得分/总分</label><input class="input-sm" id="g7a" placeholder="如 440/500"></div>
-    <div class="col"><label>初一下 得分/总分</label><input class="input-sm" id="g7b" placeholder="如 455/500"></div>
-  </div>
-  <div class="row">
-    <div class="col"><label>初二上 得分/总分</label><input class="input-sm" id="g8a" placeholder="如 460/520"></div>
-    <div class="col"><label>初二下 得分/总分</label><input class="input-sm" id="g8b" placeholder="如 475/520"></div>
-  </div>
-
   <div class="section-label">📊 区统考（可横向比较 · 最可靠）</div>
   <div class="row">
     <div class="col"><label>九上期末 得分/总分/年排 ⭐</label><input id="e9a" placeholder="如 520/620/310"></div>
@@ -92,7 +80,12 @@ input:focus{border-color:#1a73e8;outline:none}
 
   <div class="section-label">策略偏好</div>
   <div class="row">
-    <div class="col"><select id="strategy"><option value="balanced">⚖️ 平衡型</option><option value="aggressive">🚀 进取型</option><option value="safe">🛡️ 保守型</option></select></div>
+    <div class="col">
+      <select id="strategy">
+        <option value="冲重高">🚀 冲重高（分配生冲 + 集中招冲）</option>
+        <option value="稳优高">🛡️ 稳优高（确保最优学校）</option>
+      </select>
+    </div>
   </div>
   <button class="btn" onclick="analyze()">🔮 生成志愿方案</button>
 </div>
@@ -175,30 +168,8 @@ function parseInput(id) {
 }
 
 function computeInternalRank(inputs) {
-  // 分配生综合得分：学业成绩 100%（去掉素质分）
-  // 年排 + 重高率 主导
-
-  let academicScore = 0;
-  let totalWeight = 0;
-
-  // 初一 20% (上下各10%) — 看基础稳定性
-  if (inputs.g7a) { academicScore += (inputs.g7a.score/inputs.g7a.total) * 0.10; totalWeight += 0.10; }
-  if (inputs.g7b) { academicScore += (inputs.g7b.score/inputs.g7b.total) * 0.10; totalWeight += 0.10; }
-
-  // 初二 30% (上下各15%) — 看发展趋势
-  if (inputs.g8a) { academicScore += (inputs.g8a.score/inputs.g8a.total) * 0.15; totalWeight += 0.15; }
-  if (inputs.g8b) { academicScore += (inputs.g8b.score/inputs.g8b.total) * 0.15; totalWeight += 0.15; }
-
-  // 初三上 25% — 九上期末
-  if (inputs.e9a) { academicScore += (inputs.e9a.score/inputs.e9a.total) * 0.25; totalWeight += 0.25; }
-
-  // 一模 25% — 不是最重要，权重与其他初三考试持平
-  if (inputs.e1a) { academicScore += (inputs.e1a.score/inputs.e1a.total) * 0.25; totalWeight += 0.25; }
-
-  // 归一化
-  if (totalWeight > 0) academicScore = academicScore / totalWeight;
-
-  return {internal: academicScore * 100};
+  // 2026新规：分配生只看分数+年排，不用多学期加权
+  return {internal: 0}; // 仅保留占位，不再使用复杂公式
 }
 
 function predictScore(inputs) {
@@ -321,18 +292,12 @@ function genCentralPlans(rank) {
 // ═══════════════ UI ═══════════════
 function analyze() {
   const inputs = {
-    g7a: parseInput("g7a"), g7b: parseInput("g7b"),
-    g8a: parseInput("g8a"), g8b: parseInput("g8b"),
     e9a: parseInput("e9a"), e1a: parseInput("e1a"),
     e2a: parseInput("e2a"), e3a: parseInput("e3a"),
   };
 
   // Demo if empty
   if (!inputs.e1a && !inputs.e2a) {
-    document.getElementById("g7a").value = "440/500";
-    document.getElementById("g7b").value = "455/500";
-    document.getElementById("g8a").value = "460/520";
-    document.getElementById("g8b").value = "475/520";
     document.getElementById("e9a").value = "520/620/310";
     document.getElementById("e1a").value = "535/620/285";
     document.getElementById("e2a").value = "548/620/260";
@@ -365,8 +330,8 @@ function analyze() {
   document.getElementById("benchmark").innerHTML = `
     📌 <strong>排名对照</strong>:
     重高线: 前${quotaNeeded}名(28.6%) |
-    分配生线: 前${SCHOOL.quota2026}名 |
-    分配生综合分: ${internalRank.internal.toFixed(1)}
+    分配生线: 前${SCHOOL.quota2026}名
+    <br>📌 <strong>2026新规</strong>: 分配生只看中考分数+年排，平行志愿投档
   `;
 
   // 生成方案
