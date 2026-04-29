@@ -91,7 +91,7 @@ input:focus{border-color:#1a73e8;outline:none}
       </select>
     </div>
   </div>
-  <button class="btn" onclick="analyze()">🔮 生成志愿方案</button>
+  <div style="text-align:center;padding-top:8px;font-size:11px;color:#999">修改任意输入自动刷新方案</div>
 </div>
 
 <!-- 预测结果 -->
@@ -153,7 +153,7 @@ const SCHOOLS = [
   {n:"学军海创园",cat:"重高（特定）",plan:480,q:6,r:350,cutoff:615,note:"学军集团"},
   {n:"杭二钱江",cat:"重高（特定）",plan:432,q:4,r:380,cutoff:615,note:"杭二集团"},
   // ═══ 2026 新增重高 ═══
-  {n:"杭二高新",cat:"重高（2026新）",plan:864,q:9,r:null,cutoff:null,note:"2026新增 · 杭二集团"},
+  {n:"杭二高新",cat:"重高（2026新）",plan:864,q:9,r:310,cutoff:null,note:"2026新增 · 杭二集团 · 重点考察"},
   {n:"浙大附实验",cat:"重高（2026新）",plan:672,q:7,r:null,cutoff:null,note:"2026新增 · 浙大资源"},
   // ═══ 优高 ═══
   {n:"十四康桥",cat:"优高（头部）",plan:432,q:8,r:400,cutoff:612,note:"优高头部"},
@@ -458,7 +458,10 @@ function switchTab(t) {
   document.getElementById("centralPlans").style.display = t==="central"?"block":"none";
 }
 
-window.onload = () => analyze();
+window.onload = () => {
+  document.querySelectorAll("input, select").forEach(el => el.addEventListener("input", analyze));
+  analyze();
+};
 </script>
 </body>
 </html>
