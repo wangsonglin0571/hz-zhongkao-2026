@@ -76,6 +76,12 @@ input:focus{border-color:#1a73e8;outline:none}
     <div class="col"><label>三模</label><input id="e3a" placeholder="如 560/650/340"></div>
   </div>
 
+  <div class="section-label">📈 三年历史排名（定志愿区间上下限）</div>
+  <div class="row">
+    <div class="col"><label>三年最高校排 🏆</label><input id="bestRank" class="input-sm" placeholder="如 215"></div>
+    <div class="col"><label>三年最低校排 ⚠️</label><input id="worstRank" class="input-sm" placeholder="如 591"></div>
+  </div>
+
   <div class="section-label">策略偏好</div>
   <div class="row">
     <div class="col">
@@ -289,16 +295,17 @@ function genQuotaPlans(rank) {
   return plans;
 }
 
-function genCentralPlans(inputs) {
-  // 集中招生：以初中三年最高/最低排名定志愿上下限
+function genCentralPlans(inputs, histBest, histWorst) {
+  // 集中招生：以三年历史最高/最低排名定志愿上下限
   // 上限放第3志愿，下限放第8志愿
-  const allRanks = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
+  // 优先用模考排名区间，叠加三年历史极值作为参考
+  const examRanks = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
     .filter(d => d && d.rank).map(d => d.rank);
   
-  if (allRanks.length === 0) return [];
-
-  const bestRank = Math.min(...allRanks);   // 最高排名（数字最小）
-  const worstRank = Math.max(...allRanks);  // 最低排名（数字最大）
+  const bestRank = histBest || (examRanks.length ? Math.min(...examRanks) : null);
+  const worstRank = histWorst || (examRanks.length ? Math.max(...examRanks) : null);
+  
+  if (!bestRank || !worstRank) return [];
 
   // 按 r（校排参考）排序的学校列表（只取有 r 值的）
   const ranked = SCHOOLS.filter(s => s.r !== null).sort((a,b) => a.r - b.r);
@@ -360,10 +367,12 @@ function analyze() {
 
   // Demo if empty
   if (!inputs.e1a && !inputs.e2a) {
-    document.getElementById("e9a").value = "520/620/310";
-    document.getElementById("e1a").value = "535/620/285";
-    document.getElementById("e2a").value = "548/620/260";
-    document.getElementById("e3a").value = "560/620/240";
+    document.getElementById("e9a").value = "584/650/399";
+    document.getElementById("e1a").value = "528/650/430";
+    document.getElementById("e2a").value = "545/650/390";
+    document.getElementById("e3a").value = "558/650/355";
+    document.getElementById("bestRank").value = "215";
+    document.getElementById("worstRank").value = "591";
     return analyze();
   }
 
@@ -376,11 +385,13 @@ function analyze() {
   // 3. 排名预测
   const rank = predictRank(inputs, pred.score);
 
-  // 3b. 集中招生排名区间
-  const allRanks = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
+  // 3b. 集中招生排名区间（模考 + 历史极值）
+  const examRanks = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
     .filter(d => d && d.rank).map(d => d.rank);
-  const rankBest = allRanks.length ? Math.min(...allRanks) : rank;
-  const rankWorst = allRanks.length ? Math.max(...allRanks) : rank;
+  const rankBest = examRanks.length ? Math.min(...examRanks) : rank;
+  const rankWorst = examRanks.length ? Math.max(...examRanks) : rank;
+  const histBest = parseInt(document.getElementById("bestRank").value) || null;
+  const histWorst = parseInt(document.getElementById("worstRank").value) || null;
 
   // 显示 - 排名为中心
   document.getElementById("predCard").style.display = "block";
@@ -400,13 +411,14 @@ function analyze() {
     重高线: 前${quotaNeeded}名(28.6%) |
     分配生线: 前${SCHOOL.quota2026}名
     <br>📌 <strong>集中招生区间</strong>: 最高排名${rankBest} → 上限第3志愿 | 最低排名${rankWorst} → 下限第8志愿
+    ${histBest ? `<br>📌 <strong>三年历史</strong>: 🏆最高${histBest}名 | ⚠️最低${histWorst}名 → 志愿上下限以此为准` : ''}
     <br>📌 <strong>2026新规</strong>: 分配生只看中考分数+年排，平行志愿投档
   `;
 
   // 生成方案
   document.getElementById("plansArea").style.display = "block";
   const quotaPlans = genQuotaPlans(rank);
-  const centralPlans = genCentralPlans(inputs);
+  const centralPlans = genCentralPlans(inputs, histBest, histWorst);
   renderPlans("quotaPlans", quotaPlans);
   renderPlans("centralPlans", centralPlans);
 
