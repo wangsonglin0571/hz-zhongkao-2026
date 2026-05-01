@@ -385,10 +385,16 @@ function analyze() {
   document.getElementById("quotaPos").textContent =
     rank <= SCHOOL.quota2026 ? `分配生区内` : "集中招生";
 
+  const gapToZhonggao = rank - quotaNeeded;
+  const gapClass = gapToZhonggao > 0 ? '#e65100' : '#2e7d32';
   document.getElementById("benchmark").innerHTML = `
     📌 <strong>排名对照</strong>:
     重高线: 前${quotaNeeded}名(28.6%) |
     分配生总名额: ${SCHOOL.quota2026}个（含重高+优高）
+    <br>📌 <strong>你的位置</strong>: 校排第${rank}名
+    <span style="color:${gapClass};font-weight:bold;font-size:14px">
+      ${gapToZhonggao > 0 ? `⬇ 距重高线还差${gapToZhonggao}名` : `⬆ 超过重高线${Math.abs(gapToZhonggao)}名`}
+    </span>
     <br>📌 <strong>集中招生区间</strong>: 最高排名${rankBest} → 上限第3志愿 | 最低排名${rankWorst} → 下限第8志愿
     ${histBest ? `<br>📌 <strong>三年历史</strong>: 🏆最高${histBest}名 | ⚠️最低${histWorst}名 → 志愿上下限以此为准` : ''}
     <br>📌 <strong>2026新规</strong>: 分配生只看中考分数+年排，平行志愿投档
