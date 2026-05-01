@@ -222,119 +222,95 @@ function predictRank(inputs, score) {
   return ranks[ranks.length - 1];
 }
 
-// ═══════════════ 冲重高 / 稳优高 定制算法 ═══════════════
-function genQuotaPlans(rank) {
-  // 分配生激进策略：十三中竞争激烈，保守=浪费机会
-  // 5个志愿全力冲刺，只留最后一个兜底
-  const plans = [];
-  const quotaLine = SCHOOL.quota2026; // 229名
-  const zhonggaoLine = Math.round(SCHOOL.grade * SCHOOL.zhonggaoRate); // 324名
+// ═══════════════ 分配生算法 ═══════════════
+// 核心逻辑：分配生不影响集中招生投档 → 全力搏，不留保底
+function genQuotaPlans(rank, bestRank, strategy) {
+  const sorted = SCHOOLS
+    .filter(s => s.r !== null && s.q > 0)
+    .sort((a,b) => a.r - b.r);
 
-  // 只取有校排参考+有名额的学校，按质量排序（r越小越好）
-  const ranked = SCHOOLS.filter(s => s.r !== null && s.q > 0).sort((a,b) => a.r - b.r);
+  if (!sorted.length) return [];
 
-  // 找到学生排名附近的"天花板"：第一个 r <= rank 的学校（最好能摸到的）
-  let ceilingIdx = ranked.findIndex(s => s.r >= rank);
-  if (ceilingIdx === -1) ceilingIdx = ranked.length - 1;
+  // 【冲重高】激进策略：以历史最好排名为锚点向上搏
+  // 选校范围：从 bestRank-60 到 rank+100，选最好的5所
+  const upBound = Math.max(0, Math.min(bestRank, rank) - 80);
+  const lowBound = rank + 100;
 
-  // 激进窗口：从天花板往前3所（更好但需搏）+ 天花板 + 往后取满5
-  const startIdx = Math.max(0, ceilingIdx - 3);
-  const candidates = ranked.slice(startIdx, startIdx + 8); // 多取几个备选
+  const candidates = sorted.filter(s => s.r >= upBound && s.r <= lowBound);
+  const selected = candidates.slice(0, 5);
 
-  // 取差距±80名以内的学校，不硬凑5个
-  const maxGap = 80;
-  const inRange = candidates.filter(s => Math.abs(s.r - rank) <= maxGap);
-  // 按学校质量重排（好的在前）
-  inRange.sort((a,b) => a.r - b.r);
-
-  const selected = inRange.slice(0, 5);
-
-  selected.forEach((s, i) => {
-    const gap = s.r - rank; // 正=你领先参考位次, 负=你落后
-    let tier;
-    if (i === 0)             tier = "🔴 搏上限";    // 最好的，全力搏
-    else if (i <= 2)         tier = "🟠 冲";         // 前3冲
-    else if (i === 3)        tier = "🟡 冲稳";       // 第4过渡
-    else                     tier = "🟢 兜底";        // 最后一个保底
-
-    plans.push({...s, tier, priority: i, gap,
-      advice: tier === "🔴 搏上限" ? "梦想校，发挥好就是你的" :
-              tier === "🟠 冲" ? "竞争激烈但值得搏" :
-              tier === "🟡 冲稳" ? "正常发挥大概率进" :
-              "防线校，稳住心态"});
-  });
-
-  // 确保最后一个确实是安全校
-  if (plans.length === 5 && plans[4].r > rank + 30) {
-    plans[4].tier = "🟢 兜底";
-    plans[4].advice = "防线校，稳住心态";
+  if (!selected.length) {
+    // 如果范围过小取不到5所，放宽上限
+    const fallback = sorted.filter(s => s.r >= Math.max(0, rank - 50)).slice(0, 5);
+    return fallback.map((s, i) => ({
+      ...s, pos: i + 1, gap: s.r - rank,
+      tier: "🟢 捡漏", advice: "排名匹配，捡到不亏"
+    }));
   }
 
-  return plans;
+  const tiers = ["🔴 搏上限","🔴 搏","🟠 搏","🟠 拼","🟢 捡漏"];
+  const advice = [
+    "梦想校，发挥好就是你的",
+    "值得一搏，顺延可能捡漏",
+    "正常发挥有机会",
+    "排名匹配，争取拿下",
+    "绝对稳，捡到不亏"
+  ];
+
+  return selected.map((s, i) => ({
+    ...s, pos: i + 1, gap: s.r - rank,
+    tier: tiers[i] || "🟢 捡漏",
+    advice: advice[i] || "排名匹配，捡到不亏"
+  }));
 }
 
-function genCentralPlans(inputs, histBest, histWorst) {
-  // 集中招生：以三年历史最高/最低排名定志愿上下限
-  // 上限放第3志愿，下限放第8志愿
-  // 优先用模考排名区间，叠加三年历史极值作为参考
+// ═══════════════ 集中招生算法 ═══════════════
+// 核心逻辑：以模考区间为主（非历史极值），10志愿5层梯度
+function genCentralPlans(inputs, histBest, histWorst, strategy) {
   const examRanks = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
     .filter(d => d && d.rank).map(d => d.rank);
-  
-  const bestRank = histBest || (examRanks.length ? Math.min(...examRanks) : null);
-  const worstRank = histWorst || (examRanks.length ? Math.max(...examRanks) : null);
-  
-  if (!bestRank || !worstRank) return [];
 
-  // 按 r（校排参考）排序的学校列表（只取有 r 值的）
+  if (!examRanks.length && (!histBest || !histWorst)) return [];
+
+  const examBest = examRanks.length ? Math.min(...examRanks) : null;
+  const examWorst = examRanks.length ? Math.max(...examRanks) : null;
+
+  // ██ 核心改动 ██ 上限用模考最优(399)，历史最优(215)仅作加权参考
+  // 不再直接用histBest做上限——那是2年前的成绩
+  const upper = strategy === '冲重高'
+    ? (examBest !== null
+      ? Math.round((examBest * 2 + (histBest || examBest)) / 3)  // 模考最优权重更高
+      : (histBest || 215))
+    : (examBest !== null ? examBest + 30 : (histBest || 215) + 50);
+
+  const lower = strategy === '冲重高'
+    ? (examWorst !== null ? Math.max(examWorst, histWorst || examWorst) : (histWorst || 591))
+    : (examWorst !== null ? examWorst + 50 : (histWorst || 591) + 30);
+
   const ranked = SCHOOLS.filter(s => s.r !== null).sort((a,b) => a.r - b.r);
 
-  // 上限：bestRank 能进入的最好学校 → 第3志愿
-  const upperCandidates = ranked.filter(s => s.r >= bestRank);
-  const upperSchool = upperCandidates[0] || ranked[ranked.length-1];
+  // 5层梯度配置
+  const layers = [
+    { label: "🔴 冲", count: 2, rMin: Math.max(0, upper - 100), rMax: upper + 10, desc: "超常发挥有望" },
+    { label: "🟠 拼", count: 1, rMin: Math.max(0, upper - 30), rMax: upper + 50, desc: "正常发挥上限" },
+    { label: "🟡 稳", count: 3, rMin: Math.max(0, upper + 10), rMax: lower - 10, desc: "正常发挥区间" },
+    { label: "🟢 保", count: 2, rMin: Math.max(0, lower - 50), rMax: lower + 50, desc: "安全区间" },
+    { label: "🟢 兜底", count: 2, rMin: Math.max(0, lower), rMax: lower + 120, desc: "绝对安全" },
+  ];
 
-  // 下限：worstRank 也能稳进的学校 → 第8志愿
-  const lowerCandidates = ranked.filter(s => s.r >= worstRank);
-  const lowerSchool = lowerCandidates[0] || ranked[ranked.length-1];
-
-  // 构建 10 个志愿
   const plans = [];
   const used = new Set();
 
-  function addPlan(school, pos, tier, advice) {
-    if (!school || used.has(school.n)) return;
-    used.add(school.n);
-    plans.push({...school, pos, tier, advice, gap: school.r ? school.r - bestRank : null});
-  }
-
-  // 找到 upperSchool 和 lowerSchool 在 ranked 中的索引
-  const upperIdx = ranked.findIndex(s => s.n === upperSchool.n);
-  const lowerIdx = ranked.findIndex(s => s.n === lowerSchool.n);
-
-  // #1-2: 高于上限的冲一冲（upperIdx 之前的学校，逆序取最近2个）
-  const stretch = ranked.slice(0, upperIdx).reverse().slice(0, 2);
-  stretch.forEach((s, i) => addPlan(s, i+1, "🔴 冲", "超常发挥有望"));
-
-  // #3: 上限学校
-  addPlan(upperSchool, 3, "🟡 冲稳", `最高排名(${bestRank}名)可达`);
-
-  // #4-7: 上下限之间的梯度（均匀取4所）
-  if (upperIdx < lowerIdx) {
-    const middle = ranked.slice(upperIdx + 1, lowerIdx);
-    const step = Math.max(1, Math.floor(middle.length / 4));
-    for (let i = 0; i < 4 && i * step < middle.length; i++) {
-      addPlan(middle[i * step], 4 + i, "🟢 稳", "正常发挥区间");
-    }
-  }
-
-  // #8: 下限学校
-  addPlan(lowerSchool, 8, "🟢 保", `最低排名(${worstRank}名)也稳`);
-
-  // #9-10: 保底不低过头——最多比下限多取2所，且不超过当前模考排名+120
-  const examRanks2 = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
-    .filter(d => d && d.rank).map(d => d.rank);
-  const curLevel = examRanks2.length ? examRanks2[examRanks2.length - 1] : worstRank;
-  const safety = ranked.slice(lowerIdx + 1).filter(s => s.r <= curLevel + 120).slice(0, 2);
-  safety.forEach((s, i) => addPlan(s, 9 + i, "🟢 保底", "绝对安全"));
+  layers.forEach(layer => {
+    const pool = ranked
+      .filter(s => s.r >= layer.rMin && s.r <= layer.rMax && !used.has(s.n))
+      .slice(0, layer.count);
+    pool.forEach(s => {
+      used.add(s.n);
+      plans.push({...s, pos: plans.length + 1, tier: layer.label, advice: layer.desc,
+        gap: s.r - upper});
+    });
+  });
 
   return plans.slice(0, 10);
 }
@@ -402,8 +378,8 @@ function analyze() {
 
   // 生成方案
   document.getElementById("plansArea").style.display = "block";
-  const quotaPlans = genQuotaPlans(rank);
-  const centralPlans = genCentralPlans(inputs, histBest, histWorst);
+  const quotaPlans = genQuotaPlans(rank, histBest || rank, strategy);
+  const centralPlans = genCentralPlans(inputs, histBest, histWorst, strategy);
   renderPlans("quotaPlans", quotaPlans);
   renderPlans("centralPlans", centralPlans);
 
