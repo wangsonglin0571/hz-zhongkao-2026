@@ -1,0 +1,38 @@
+{
+  "school": "杭州十三中",
+  "year": 2026,
+  "metric": "grade_size_and_actual_exam_participants_reference",
+  "previous_project_assumption": 1132,
+  "latest_user_report": {
+    "grade_structure": "24个班",
+    "graduate_scale": "1100多名毕业生",
+    "evidence": "4月上旬十三中初三毕业大合影报道",
+    "exam_participants_note": "此前老师咨询口径称实际参加中考少于1100人；与毕业生1100多人口径可能存在统计范围差异，需等学校正式口径确认"
+  },
+  "confirmed_2025_reference": {
+    "grade_size": 1044,
+    "note": "1044人为2025届/去年在校人数，不应用作2026届人数"
+  },
+  "quota_estimate_2026": {
+    "total_school_quota_range": [220, 225],
+    "comparison_to_2025_estimate": "比去年预估约210个略多几个",
+    "top3_school_quota_estimate": {
+      "schools": ["杭二", "学军", "杭高"],
+      "each_approx": 12,
+      "total_approx": 36
+    }
+  },
+  "official_publication_status_as_of": "2026-05-05 尚未正式公布十三中各高中具体到校分配生名额明细",
+  "expected_school_notice_window": {
+    "start": "2026-05-06",
+    "end": "2026-05-09",
+    "channel": "学校公示栏/校内公示"
+  },
+  "source_type": "user_report_from_school_news_and_teacher_consultation",
+  "confidence": "B",
+  "updated_at": "2026-05-05",
+  "strategy_impact": {
+    "advice": "2026分配生总名额暂按220-225做粗估，不再使用229作为唯一口径；各高中个位数名额等待5月6日-9日校内公示后替换。",
+    "rank_axis": "志愿判断仍以十三中校内绝对排名为主，辅以2025各高中分配生最低校内位次。"
+  }
+}

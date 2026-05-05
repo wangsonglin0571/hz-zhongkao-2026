@@ -1,0 +1,17 @@
+{
+  "year": 2026,
+  "region": "杭州市",
+  "school": "杭州十三中",
+  "topic": "各校具体到校分配生名额明细",
+  "status_as_of": "2026-05-05",
+  "official_publication_status": "杭州市教育局及十三中官方尚未正式公布各校具体到校的分配生名额明细",
+  "expected_school_notice_window": {
+    "start": "2026-05-06",
+    "end": "2026-05-09",
+    "channel": "学校公示栏/校内公示"
+  },
+  "source_type": "user_report_and_admissions_timing_note",
+  "confidence": "B",
+  "collection_action": "5月6日-9日重点关注十三中校内公示栏、班主任通知、家长群截图、公众号/19楼转载，拿到表后结构化入库并替换当前229旧估值。",
+  "project_impact": "当前不得把十三中2026各高中到校名额写死；分配生策略先使用2025十三中录取位次表 + 2026全市招生计划 + <1100实际参考人数做临时判断。"
+}

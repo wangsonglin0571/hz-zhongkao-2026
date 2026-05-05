@@ -1,0 +1,33 @@
+{
+  "source_id": "yuanbao_share_dxU0BqrBhmpW_2026-05-05",
+  "year": 2025,
+  "junior_school": "杭州第十三中学",
+  "data_type": "quota_admission_min_school_rank_reference",
+  "source_type": "ai_search_summary_with_network_sources",
+  "source_url": "https://yb.tencent.com/s/dxU0BqrBhmpW",
+  "fetched_at": "2026-05-05",
+  "reliability": "C+",
+  "reliability_note": "元宝搜索汇总，原回答注明网络统计、非官方发布；与搜狐转载字段部分一致。用于策略参考，需继续用微信公众号全文/家长会截图/19楼原帖交叉验证。",
+  "columns": {
+    "high_school": "高中学校（校区）",
+    "min_school_rank": "分配生录取最低校内位次",
+    "score_reference": "对应中考分数（参考）",
+    "rank_is_lower_bound": "true 表示 520+ 这类非精确位次"
+  },
+  "records": [
+    {"high_school": "杭二滨江", "min_school_rank": 15, "score_reference": null, "rank_is_lower_bound": false},
+    {"high_school": "学军西溪", "min_school_rank": 27, "score_reference": null, "rank_is_lower_bound": false},
+    {"high_school": "杭高贡院", "min_school_rank": 73, "score_reference": null, "rank_is_lower_bound": false},
+    {"high_school": "学军紫金港", "min_school_rank": 111, "score_reference": 626, "rank_is_lower_bound": false},
+    {"high_school": "十四凤起", "min_school_rank": 159, "score_reference": 624, "rank_is_lower_bound": false},
+    {"high_school": "杭四下沙", "min_school_rank": 210, "score_reference": 624, "rank_is_lower_bound": false},
+    {"high_school": "长河", "min_school_rank": 295, "score_reference": 615, "rank_is_lower_bound": false},
+    {"high_school": "杭高钱江", "min_school_rank": 306, "score_reference": 614, "rank_is_lower_bound": false},
+    {"high_school": "十四康桥", "min_school_rank": 397, "score_reference": null, "rank_is_lower_bound": false},
+    {"high_school": "十四青山湖", "min_school_rank": 520, "score_reference": 598, "rank_is_lower_bound": true},
+    {"high_school": "杭高钱塘", "min_school_rank": 542, "score_reference": null, "rank_is_lower_bound": false},
+    {"high_school": "杭七转塘", "min_school_rank": 549, "score_reference": null, "rank_is_lower_bound": false},
+    {"high_school": "杭二富春", "min_school_rank": 576, "score_reference": null, "rank_is_lower_bound": false},
+    {"high_school": "源清二中", "min_school_rank": 633, "score_reference": null, "rank_is_lower_bound": false}
+  ]
+}

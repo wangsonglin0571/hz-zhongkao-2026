@@ -1,0 +1,41 @@
+{
+  "source_id": "19lou_mip_83241758762526160_2025-09-25",
+  "year": 2025,
+  "junior_school": "杭州十三中",
+  "title": "西湖区的家长必看！“航母”十三中的25年中考数据来了",
+  "source_url": "https://www.19lou.com/mip/forum-15-thread-83241758762526160-1-1.html",
+  "image_url": "https://att3.citysbs.com/m480x/hangzhou/2025/09/25/09/middle_450x595-090630_v3_20411758762390417_d6b428c8df605f305ce6cf0802d28e24.png",
+  "published_at": "2025-09-25",
+  "fetched_at": "2026-05-05",
+  "source_type": "non_wechat_community_post_with_image_ocr",
+  "reliability": "B-",
+  "reliability_note": "19楼MIP页面可访问，正文称根据网络数据；核心表格来自图片OCR，需保留截图/原图核验。",
+  "grade_size_2025": 1044,
+  "front_13_admitted_total": 299,
+  "front_13_ratio": 0.2864,
+  "note": "少部分考生因出国或出市，实际录取比例会有略微不同。网页正文还称第一批/优高录取率约71%左右，但未给出完整明细表。",
+  "columns": {
+    "school_with_cutoff": "学校名及2025录取线/参考线，如有",
+    "admitted_total": "录取总数",
+    "central_exam": "裸考",
+    "quota": "分配",
+    "specialty": "特长",
+    "international_or_feature": "中外合作/特色班"
+  },
+  "records": [
+    {"school_with_cutoff": "杭二滨江630", "school": "杭二滨江", "cutoff_score": 630, "admitted_total": 30, "central_exam": 11, "quota": 13, "specialty": 6, "international_or_feature": 0},
+    {"school_with_cutoff": "学军西溪629", "school": "学军西溪", "cutoff_score": 629, "admitted_total": 25, "central_exam": 12, "quota": 12, "specialty": 1, "international_or_feature": 0},
+    {"school_with_cutoff": "杭高贡院627", "school": "杭高贡院", "cutoff_score": 627, "admitted_total": 22, "central_exam": 8, "quota": 12, "specialty": 2, "international_or_feature": 0},
+    {"school_with_cutoff": "十四凤起624", "school": "十四凤起", "cutoff_score": 624, "admitted_total": 31, "central_exam": 13, "quota": 12, "specialty": 2, "international_or_feature": 4},
+    {"school_with_cutoff": "学军紫金港623", "school": "学军紫金港", "cutoff_score": 623, "admitted_total": 44, "central_exam": 34, "quota": 7, "specialty": 3, "international_or_feature": 0},
+    {"school_with_cutoff": "余高623", "school": "余高", "cutoff_score": 623, "admitted_total": 1, "central_exam": 1, "quota": 0, "specialty": 0, "international_or_feature": 0},
+    {"school_with_cutoff": "杭四下沙622", "school": "杭四下沙", "cutoff_score": 622, "admitted_total": 26, "central_exam": 10, "quota": 11, "specialty": 0, "international_or_feature": 5},
+    {"school_with_cutoff": "萧山中学621", "school": "萧山中学", "cutoff_score": 621, "admitted_total": 4, "central_exam": 4, "quota": 0, "specialty": 0, "international_or_feature": 0},
+    {"school_with_cutoff": "浙附玉泉620", "school": "浙附玉泉", "cutoff_score": 620, "admitted_total": 29, "central_exam": 18, "quota": 11, "specialty": 0, "international_or_feature": 0},
+    {"school_with_cutoff": "长河高中619", "school": "长河高中", "cutoff_score": 619, "admitted_total": 18, "central_exam": 5, "quota": 11, "specialty": 2, "international_or_feature": 0},
+    {"school_with_cutoff": "富阳中学617", "school": "富阳中学", "cutoff_score": 617, "admitted_total": 2, "central_exam": 1, "quota": 0, "specialty": 0, "international_or_feature": 1},
+    {"school_with_cutoff": "杭高钱江617", "school": "杭高钱江", "cutoff_score": 617, "admitted_total": 31, "central_exam": 18, "quota": 6, "specialty": 3, "international_or_feature": 4},
+    {"school_with_cutoff": "杭师附中617", "school": "杭师附中", "cutoff_score": 617, "admitted_total": 31, "central_exam": 10, "quota": 11, "specialty": 3, "international_or_feature": 7},
+    {"school_with_cutoff": "杭州外国语", "school": "杭州外国语", "cutoff_score": null, "admitted_total": 5, "central_exam": 0, "quota": 0, "specialty": 0, "international_or_feature": 5}
+  ]
+}
