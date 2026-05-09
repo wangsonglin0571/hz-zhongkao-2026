@@ -64,7 +64,14 @@ input:focus{border-color:#1a73e8;outline:none}
   <p>杭州十三中专属 · 校排定志愿 · 区间定上限/下限</p>
 </div>
 
-<!-- 成绩输入 -->
+<div class="card" id="benchmarkCard" style="background:#e8f5e9;border-left:4px solid #2e7d32">
+  <h2 style="color:#2e7d32;border-color:#a5d6a7">📊 2026一模基准数据</h2>
+  <div style="font-size:13px;line-height:1.8">
+    <strong>西湖区划线：</strong>前三线≈582 | 重高线(A)≈566 | 优高线≈519<br>
+    <strong>十三中数据：</strong>120人上584.5 | 前三率≈11% | 重高率≈30% | 优高率≈75%<br>
+    <strong>2026新政：</strong>社会学科闭卷 | 分配生5/29-30填报 | 24校(30单位)招9021人(+1017)
+  </div>
+</div>
 <div class="card" id="inputCard">
   <div class="section-label">📊 模考成绩（得分/总分/校排）</div>
   <div class="row">
@@ -102,9 +109,14 @@ input:focus{border-color:#1a73e8;outline:none}
     <div class="score" id="predRank" style="font-size:42px;color:#e65100">--</div>
     <div class="range" id="predScore" style="font-size:16px;color:#666"></div>
     <div class="grid-3">
-      <div><div class="val" style="color:#2e7d32">28.6%</div><div class="lbl">十三中重高率</div></div>
+      <div><div class="val" style="color:#2e7d32">${(SCHOOL.zhonggaoRate*100).toFixed(0)}%</div><div class="lbl">十三中重高率</div></div>
       <div><div class="val" id="zhonggaoChance" style="color:#1a73e8">--</div><div class="lbl">你上重高概率</div></div>
       <div><div class="val" id="quotaPos" style="color:#333">--</div><div class="lbl">vs 分配生线</div></div>
+    </div>
+    <div class="grid-3" style="margin-top:6px;padding-top:6px;border-top:1px solid #ddd">
+      <div><div class="val" style="color:#666;font-size:14px">${(SCHOOL.top3rate*100).toFixed(0)}%</div><div class="lbl">前三所率</div></div>
+      <div><div class="val" style="color:#666;font-size:14px">${SCHOOL.top3count}人</div><div class="lbl">前三名额</div></div>
+      <div><div class="val" style="color:#666;font-size:14px">${SCHOOL.quota2026}</div><div class="lbl">分配生总额</div></div>
     </div>
   </div>
   <div class="benchmark" id="benchmark"></div>
@@ -125,12 +137,12 @@ input:focus{border-color:#1a73e8;outline:none}
   <div id="reminderText" style="font-size:13px"></div>
 </div>
 
-<div class="footer">数据来源: 杭州教育发布 · 十三中内部算法 · 2026年4月</div>
+<div class="footer">数据来源: 杭州教育发布 · 十三中内部算法 · 2026年5月 · <a href="https://wangsonglin0571.github.io/hz-zhongkao-2026/" style="color:#1a73e8">wangsonglin0571.github.io/hz-zhongkao-2026</a></div>
 </div>
 
 <script>
 // ═══════════════ 数据 ═══════════════
-const SCHOOL = {name:"杭州十三中",grade:1132,quota2026:229,zhonggaoRate:0.2864,yougaoRate:0.71};
+const SCHOOL = {name:"杭州十三中",grade:1100,quota2026:225,zhonggaoRate:0.30,yougaoRate:0.75,top3rate:0.11,top3count:36};
 const CALIBRATION = {grade7Total:500,grade8Total:520,grade9aTotal:620,mockTotal:620};
 
 const SCHOOLS = [
@@ -366,9 +378,8 @@ function analyze() {
   const gapToZhonggao = rank - quotaNeeded;
   const gapClass = gapToZhonggao > 0 ? '#e65100' : '#2e7d32';
   document.getElementById("benchmark").innerHTML = `
-    📌 <strong>排名对照</strong>:
-    重高线: 前${quotaNeeded}名(28.6%) |
-    分配生总名额: ${SCHOOL.quota2026}个（含重高+优高）
+    📌 <strong>排名对照</strong>: 重高线前${quotaNeeded}名(${(SCHOOL.zhonggaoRate*100).toFixed(0)}%) | 分配生${SCHOOL.quota2026}个 | <strong>前三所≈36人</strong>
+    <br>📌 <strong>一模基准</strong>: 西湖区前三线≈582 重高线≈566 | 120人上584.5
     <br>📌 <strong>你的位置</strong>: 校排第${rank}名
     <span style="color:${gapClass};font-weight:bold;font-size:14px">
       ${gapToZhonggao > 0 ? `⬇ 距重高线还差${gapToZhonggao}名` : `⬆ 超过重高线${Math.abs(gapToZhonggao)}名`}
@@ -388,11 +399,12 @@ function analyze() {
   // 提醒
   document.getElementById("reminder").style.display = "block";
   document.getElementById("reminderText").innerHTML = `
-    • 填报: 5月29日 8:00 ~ 5月30日 18:00 (www.hzjyks.net) · 不可修改<br>
-    • 分配生需综评3A + 连续三年在读<br>
+    • 📝 分配生填报: 5月29日8:00~5月30日18:00 (www.hzjyks.net) · 不可修改<br>
+    • 🏁 中考: 6月20-21日 · 社会学科闭卷 ⚠️<br>
+    • 分配生需综评3A + 连续三年在读 · 前八所重高70%分配<br>
     • 同分排序: 语文数学 → 英语 → 科学 → 社会<br>
     • 任何预测有误差，建议上下浮动5-10分作为安全区间<br>
-    • 一模最重要(难度最大)，二模定档次，三模稳心态<br>
+    • 一模最重要(难度最大)，二模定档次，三模稳心态
   `;
 }
 
