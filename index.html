@@ -114,12 +114,58 @@ input:focus{border-color:#1a73e8;outline:none}
   </div>
 </div>
 
-<!-- 以下为动态计算工具，仅供参考 -->
+<!-- ═══════════════ 推荐 vs 最终方案对比 ═══════════════ -->
+<div class="card" id="compareCard" style="background:#fff;border-left:4px solid #f57c00">
+  <h2 style="color:#f57c00;border-color:#ffe0b2">⚖️ 算法推荐 vs 最终方案 · 对比分析</h2>
+  <small style="color:#999">推荐 = 校排驱动（保守）| 最终方案 = 分数/冲高驱动（激进）</small>
+
+  <div style="margin:12px 0">
+    <div class="section-label" style="color:#2e7d32;border-color:#2e7d32">🎯 分配生对比（5个）</div>
+    <table class="final-table" style="font-size:12px">
+      <tr style="background:#e8f5e9"><th>序</th><th>📊 算法推荐（校排517→上限350）</th><th>序</th><th>📋 最终方案（分数驱动→上限159）</th><th>差距</th></tr>
+      <tr><td>1</td><td>[21] 学军海创园 <span style="color:#2e7d32;font-size:11px">校排350</span></td><td>1</td><td>[13] 十四凤起 <span style="color:#c62828;font-size:11px">校排159</span></td><td style="color:#c62828">↑191名</td></tr>
+      <tr><td>2</td><td>[23] 杭高钱塘 <span style="color:#2e7d32;font-size:11px">校排370</span></td><td>2</td><td>[05] 杭四下沙 <span style="color:#c62828;font-size:11px">校排210</span></td><td style="color:#c62828">↑160名</td></tr>
+      <tr><td>3</td><td>[22] 杭二钱江 <span style="color:#2e7d32;font-size:11px">校排380</span></td><td>3</td><td>[15] 浙大玉泉 <span style="color:#c62828;font-size:11px">校排230</span></td><td style="color:#c62828">↑150名</td></tr>
+      <tr><td>4</td><td>[14] 十四康桥 <span style="color:#f57c00;font-size:11px">校排400</span></td><td>4</td><td>[02] 杭高钱江 <span style="color:#f57c00;font-size:11px">校排306</span></td><td style="color:#f57c00">↑94名</td></tr>
+      <tr><td>5</td><td>[26] 杭高临平 <span style="color:#2e7d32;font-size:11px">校排420</span></td><td>5</td><td>[21] 学军海创园 <span style="color:#2e7d32;font-size:11px">校排350</span></td><td style="color:#2e7d32">↑70名</td></tr>
+    </table>
+    <div style="font-size:11px;color:#e65100;margin-top:4px">⚠️ 最终方案比算法推荐高了70~191个名次，依赖分配生「捡漏」机制——你排名低但前面的人不选这个学校。</div>
+  </div>
+
+  <div style="margin:16px 0">
+    <div class="section-label" style="color:#1a73e8;border-color:#1a73e8">📝 集中招生第一批对比（10个）</div>
+    <table class="final-table" style="font-size:12px">
+      <tr style="background:#e3f2fd"><th>序</th><th>📊 算法推荐（排名399~517区间）</th><th>序</th><th>📋 最终方案（分数629~605区间）</th><th>差距</th></tr>
+      <tr><td>1</td><td>[02] 杭高钱江 <span style="color:#f57c00;font-size:11px">排名306</span></td><td>1</td><td>[17] 学军西溪 <span style="color:#c62828;font-size:11px">629分</span></td><td style="color:#c62828">⬆⬆⬆</td></tr>
+      <tr><td>2</td><td>[21] 学军海创园 <span style="color:#f57c00;font-size:11px">排名350</span></td><td>2</td><td>[18] 学军紫金港 <span style="color:#c62828;font-size:11px">623分</span></td><td style="color:#c62828">⬆⬆⬆</td></tr>
+      <tr><td>3</td><td>[22] 杭二钱江 <span style="color:#f57c00;font-size:11px">排名380</span></td><td>3</td><td>[15] 浙大玉泉 <span style="color:#c62828;font-size:11px">620分</span></td><td style="color:#c62828">⬆⬆</td></tr>
+      <tr><td>4</td><td>[26] 杭高临平 <span style="color:#2e7d32;font-size:11px">排名420</span></td><td>4</td><td>[12] 杭师附中 <span style="color:#c62828;font-size:11px">617分</span></td><td style="color:#c62828">⬆⬆</td></tr>
+      <tr><td>5</td><td>[16] 浙大丁兰 <span style="color:#2e7d32;font-size:11px">排名430</span></td><td>5</td><td>[02] 杭高钱江 <span style="color:#f57c00;font-size:11px">617分</span></td><td style="color:#f57c00">⬆</td></tr>
+      <tr><td>6</td><td>[24] 杭四江东 <span style="color:#2e7d32;font-size:11px">排名460</span></td><td>6</td><td>[22] 杭二钱江 <span style="color:#2e7d32;font-size:11px">615分</span></td><td style="color:#666">≈匹配</td></tr>
+      <tr><td>7</td><td>[04] 杭二东河 <span style="color:#2e7d32;font-size:11px">排名500</span></td><td>7</td><td>[14] 十四康桥 <span style="color:#2e7d32;font-size:11px">612分</span></td><td style="color:#666">≈</td></tr>
+      <tr><td>8</td><td>[28] 学军桐庐 <span style="color:#2e7d32;font-size:11px">排名500</span></td><td>8</td><td>[16] 浙大丁兰 <span style="color:#2e7d32;font-size:11px">610分</span></td><td style="color:#666">≈</td></tr>
+      <tr><td>9</td><td>[31] 长河二高 <span style="color:#2e7d32;font-size:11px">排名550</span></td><td>9</td><td>[20] 源清中学 <span style="color:#2e7d32;font-size:11px">607分</span></td><td style="color:#666">≈</td></tr>
+      <tr style="border-bottom:2px solid #f57c00"><td>10</td><td>[20] 源清中学 <span style="color:#2e7d32;font-size:11px">排名600</span></td><td>10</td><td>[23] 杭高钱塘 <span style="color:#2e7d32;font-size:11px">605分</span></td><td style="color:#666">≈</td></tr>
+    </table>
+    <div style="font-size:11px;color:#e65100;margin-top:4px">⚠️ 前5志愿最终方案远高于算法推荐。策略差异：最终方案假设中考超常发挥(620+)，算法以校排517为锚点。</div>
+  </div>
+
+  <div style="background:#fff3e0;padding:12px;border-radius:8px;font-size:12px;line-height:1.8;margin-top:12px">
+    <strong>💡 决策思路：</strong><br>
+    1. <span style="color:#2e7d32"><strong>分配生</strong></span>：不影响集中招生，全力搏。即使第1志愿十四凤起(159)看似遥不可及，但分配生是<strong>按校内竞争</strong>——你前面的人选了别的学校，名额就顺延。从九上399→二模517，排名下行，但分配生仍有捡漏空间。<br>
+    2. <span style="color:#1a73e8"><strong>集中招生第一批</strong></span>：学西(629)和学紫(623)作为第1/2志愿是「梦想校」——需要中考超常发挥到620+。如果中考实际在600-610区间，这两个志愿会浪费。<br>
+    3. <span style="color:#e65100"><strong>最大风险</strong></span>：最终方案前5志愿都依赖高分，如果中考发挥正常(≈全校517名水平)，实际录取可能从第5-6志愿开始，前4个白填。<br>
+    4. <span style="color:#1a73e8"><strong>是否调整？</strong></span>建议至少保留学西/学紫作为梦想志愿(鼓舞士气)，但第3-5志愿可以考虑校排更匹配的学校，确保不会滑档太深。
+  </div>
+</div>
+
+
 <div class="card" id="benchmarkCard" style="background:#e8f5e9;border-left:4px solid #2e7d32">
-  <h2 style="color:#2e7d32;border-color:#a5d6a7">📊 2026一模基准数据</h2>
+  <h2 style="color:#2e7d32;border-color:#a5d6a7">📊 2026二模基准数据</h2>
   <div style="font-size:13px;line-height:1.8">
     <strong>西湖区划线：</strong>前三线≈582 | 重高线(A)≈566 | 优高线≈519<br>
     <strong>十三中数据：</strong>120人上584.5 | 前三率≈11% | 重高率≈30% | 优高率≈75%<br>
+    <strong>王佐治成绩：</strong>九上584/校排399 → 一模558/461 → 二模546/校排517 | 趋势下行<br>
     <strong>2026新政：</strong>社会学科闭卷 | 分配生5/29-30填报 | 24校(30单位)招9021人(+1017)
   </div>
 </div>
@@ -160,14 +206,14 @@ input:focus{border-color:#1a73e8;outline:none}
     <div class="score" id="predRank" style="font-size:42px;color:#e65100">--</div>
     <div class="range" id="predScore" style="font-size:16px;color:#666"></div>
     <div class="grid-3">
-      <div><div class="val" style="color:#2e7d32">${(SCHOOL.zhonggaoRate*100).toFixed(0)}%</div><div class="lbl">十三中重高率</div></div>
+      <div><div class="val" style="color:#2e7d32">30%</div><div class="lbl">十三中重高率</div></div>
       <div><div class="val" id="zhonggaoChance" style="color:#1a73e8">--</div><div class="lbl">你上重高概率</div></div>
       <div><div class="val" id="quotaPos" style="color:#333">--</div><div class="lbl">vs 分配生线</div></div>
     </div>
     <div class="grid-3" style="margin-top:6px;padding-top:6px;border-top:1px solid #ddd">
-      <div><div class="val" style="color:#666;font-size:14px">${(SCHOOL.top3rate*100).toFixed(0)}%</div><div class="lbl">前三所率</div></div>
-      <div><div class="val" style="color:#666;font-size:14px">${SCHOOL.top3count}人</div><div class="lbl">前三名额</div></div>
-      <div><div class="val" style="color:#666;font-size:14px">${SCHOOL.quota2026}</div><div class="lbl">分配生总额</div></div>
+      <div><div class="val" style="color:#666;font-size:14px">11%</div><div class="lbl">前三所率</div></div>
+      <div><div class="val" style="color:#666;font-size:14px">36人</div><div class="lbl">前三名额</div></div>
+      <div><div class="val" style="color:#666;font-size:14px">225</div><div class="lbl">分配生总额</div></div>
     </div>
   </div>
   <div class="benchmark" id="benchmark"></div>
@@ -198,40 +244,40 @@ const CALIBRATION = {grade7Total:500,grade8Total:520,grade9aTotal:620,mockTotal:
 
 const SCHOOLS = [
   // ═══ 重高（老牌）— 按2025分数线排序 ═══
-  {n:"杭二中滨江",cat:"重高（老牌）",plan:672,q:12,r:15,cutoff:630,note:"杭州最顶尖"},
-  {n:"学军中学西溪",cat:"重高（老牌）",plan:672,q:12,r:27,cutoff:629,note:"竞赛强校"},
-  {n:"杭高贡院",cat:"重高（老牌）",plan:672,q:12,r:73,cutoff:627,note:"百年名校"},
-  {n:"十四凤起",cat:"重高（老牌）",plan:624,q:11,r:159,cutoff:624,note:"理科强校"},
-  {n:"学军紫金港",cat:"重高（老牌）",plan:720,q:7,r:111,cutoff:623,note:"学军新校区"},
-  {n:"杭四下沙",cat:"重高（老牌）",plan:624,q:11,r:210,cutoff:622,note:"国际化特色"},
-  {n:"浙大附玉泉",cat:"重高（老牌）",plan:624,q:11,r:230,cutoff:620,note:"浙大资源"},
-  {n:"长河高中",cat:"重高（老牌）",plan:624,q:11,r:295,cutoff:619,note:"可捡漏"},
-  {n:"杭高钱江",cat:"重高（老牌）",plan:672,q:7,r:306,cutoff:617,note:"杭高集团"},
+  {n:"杭二中滨江",cd:"03",cat:"重高（老牌）",plan:672,q:12,r:15,cutoff:630,note:"杭州最顶尖"},
+  {n:"学军中学西溪",cd:"17",cat:"重高（老牌）",plan:672,q:12,r:27,cutoff:629,note:"竞赛强校"},
+  {n:"杭高贡院",cd:"01",cat:"重高（老牌）",plan:672,q:12,r:73,cutoff:627,note:"百年名校"},
+  {n:"十四凤起",cd:"13",cat:"重高（老牌）",plan:624,q:11,r:159,cutoff:624,note:"理科强校"},
+  {n:"学军紫金港",cd:"18",cat:"重高（老牌）",plan:720,q:7,r:111,cutoff:623,note:"学军新校区"},
+  {n:"杭四下沙",cd:"05",cat:"重高（老牌）",plan:624,q:11,r:210,cutoff:622,note:"国际化特色"},
+  {n:"浙大附玉泉",cd:"15",cat:"重高（老牌）",plan:624,q:11,r:230,cutoff:620,note:"浙大资源"},
+  {n:"长河高中",cd:"19",cat:"重高（老牌）",plan:624,q:11,r:295,cutoff:619,note:"可捡漏"},
+  {n:"杭高钱江",cd:"02",cat:"重高（老牌）",plan:672,q:7,r:306,cutoff:617,note:"杭高集团"},
   // ═══ 重高守门员 ═══
-  {n:"杭师大附中",cat:"重高守门员",plan:720,q:13,r:250,cutoff:617,note:"师范底子"},
+  {n:"杭师大附中",cd:"12",cat:"重高守门员",plan:720,q:13,r:250,cutoff:617,note:"师范底子"},
   // ═══ 重高（特定） ═══
-  {n:"学军海创园",cat:"重高（特定）",plan:576,q:6,r:350,cutoff:615,note:"学军集团"},
-  {n:"杭高钱塘",cat:"优高",plan:1008,q:10,r:370,cutoff:null,note:"杭高集团"},
-  {n:"杭二钱江",cat:"重高（特定）",plan:384,q:4,r:380,cutoff:615,note:"杭二集团"},
-  {n:"杭高临平",cat:"优高",plan:384,q:4,r:420,cutoff:null,note:"杭高集团新校"},
+  {n:"学军海创园",cd:"21",cat:"重高（特定）",plan:576,q:6,r:350,cutoff:615,note:"学军集团"},
+  {n:"杭高钱塘",cd:"23",cat:"优高",plan:1008,q:10,r:370,cutoff:null,note:"杭高集团"},
+  {n:"杭二钱江",cd:"22",cat:"重高（特定）",plan:384,q:4,r:380,cutoff:615,note:"杭二集团"},
+  {n:"杭高临平",cd:"26",cat:"优高",plan:384,q:4,r:420,cutoff:null,note:"杭高集团新校"},
   // ═══ 2026 新增重高 ═══
-  {n:"杭二高新",cat:"重高（2026新）",plan:864,q:9,r:310,cutoff:null,note:"2026新增 · 杭二集团 · 重点考察"},
-  {n:"浙大附实验",cat:"重高（2026新）",plan:672,q:7,r:null,cutoff:null,note:"2026新增 · 浙大资源"},
+  {n:"杭二高新",cd:"33",cat:"重高（2026新）",plan:864,q:9,r:310,cutoff:null,note:"2026新增 · 杭二集团 · 重点考察"},
+  {n:"浙大附实验",cd:"34",cat:"重高（2026新）",plan:672,q:7,r:null,cutoff:null,note:"2026新增 · 浙大资源"},
   // ═══ 优高 ═══
-  {n:"十四康桥",cat:"优高（头部）",plan:768,q:8,r:400,cutoff:612,note:"优高头部"},
-  {n:"浙大附丁兰",cat:"优高",plan:672,q:7,r:430,cutoff:null,note:"浙大附分校"},
-  {n:"杭四江东",cat:"优高",plan:672,q:7,r:460,cutoff:null,note:"杭四集团"},
-  {n:"杭二富春",cat:"优高",plan:384,q:4,r:480,cutoff:null,note:"杭二集团"},
-  {n:"杭二东河",cat:"优高",plan:480,q:5,r:500,cutoff:null,note:"杭二集团"},
-  {n:"学军桐庐",cat:"优高",plan:384,q:4,r:500,cutoff:null,note:"学军集团"},
-  {n:"十四青山湖",cat:"优高",plan:384,q:4,r:520,cutoff:null,note:"十四中分校"},
-  {n:"长河二高",cat:"优高",plan:960,q:10,r:550,cutoff:null,note:"长河分校"},
-  {n:"源清中学",cat:"优高",plan:768,q:8,r:600,cutoff:null,note:"拱墅区优高"},
-  {n:"杭七转塘",cat:"优高",plan:528,q:5,r:650,cutoff:null,note:"美术特色"},
-  {n:"杭师大附二中",cat:"优高",plan:768,q:8,r:680,cutoff:null,note:""},
-  {n:"杭四吴山",cat:"优高",plan:432,q:4,r:750,cutoff:null,note:""},
-  {n:"源清二高",cat:"优高",plan:672,q:7,r:700,cutoff:null,note:"源清分校"},
-  {n:"绿城育华",cat:"优高",plan:240,q:2,r:800,cutoff:null,note:"民办 26000/学期"},
+  {n:"十四康桥",cd:"14",cat:"优高（头部）",plan:768,q:8,r:400,cutoff:612,note:"优高头部"},
+  {n:"浙大附丁兰",cd:"16",cat:"优高",plan:672,q:7,r:430,cutoff:null,note:"浙大附分校"},
+  {n:"杭四江东",cd:"24",cat:"优高",plan:672,q:7,r:460,cutoff:null,note:"杭四集团"},
+  {n:"杭二富春",cd:"27",cat:"优高",plan:384,q:4,r:480,cutoff:null,note:"杭二集团"},
+  {n:"杭二东河",cd:"04",cat:"优高",plan:480,q:5,r:500,cutoff:null,note:"杭二集团"},
+  {n:"学军桐庐",cd:"28",cat:"优高",plan:384,q:4,r:500,cutoff:null,note:"学军集团"},
+  {n:"十四青山湖",cd:"25",cat:"优高",plan:384,q:4,r:520,cutoff:null,note:"十四中分校"},
+  {n:"长河二高",cd:"31",cat:"优高",plan:960,q:10,r:550,cutoff:null,note:"长河分校"},
+  {n:"源清中学",cd:"20",cat:"优高",plan:768,q:8,r:600,cutoff:null,note:"拱墅区优高"},
+  {n:"杭七转塘",cd:"07",cat:"优高",plan:528,q:5,r:650,cutoff:null,note:"美术特色"},
+  {n:"杭师大附二中",cd:"30",cat:"优高",plan:768,q:8,r:680,cutoff:null,note:""},
+  {n:"杭四吴山",cd:"06",cat:"优高",plan:432,q:4,r:750,cutoff:null,note:""},
+  {n:"源清二高",cd:"32",cat:"优高",plan:672,q:7,r:700,cutoff:null,note:"源清分校"},
+  {n:"绿城育华",cd:"40",cat:"优高",plan:240,q:2,r:800,cutoff:null,note:"民办 26000/学期"},
 ];
 
 // ═══════════════ 核心算法 ═══════════════
@@ -389,10 +435,9 @@ function analyze() {
   if (!inputs.e1a && !inputs.e2a) {
     document.getElementById("e9a").value = "584/620/399";
     document.getElementById("e1a").value = "558/620/461";
-    document.getElementById("e2a").value = "575/620/340";
-    document.getElementById("e3a").value = "580/620/320";
-    document.getElementById("bestRank").value = "320";
-    document.getElementById("worstRank").value = "461";
+    document.getElementById("e2a").value = "546/620/517";
+    document.getElementById("bestRank").value = "399";
+    document.getElementById("worstRank").value = "517";
     return analyze();
   }
 
@@ -470,7 +515,7 @@ function renderPlans(id, plans) {
     return `<div class="plan-item">
       <div class="plan-num ${cls}">${pos}</div>
       <div class="plan-info">
-        <div class="school">${p.n} <span style="font-size:11px;color:#999">${p.cat}·${p.tier||""}级</span></div>
+        <div class="school">[${p.cd||"?"}] ${p.n} <span style="font-size:11px;color:#999">${p.cat}·${p.tier||""}级</span></div>
         <div class="detail">名额: ${p.q||p.plan}人 | 校排参考: 前${p.r||"?"}名 | 差距: ${gapInfo}${p.cutoff ? ` | 分数线: ${p.cutoff}` : ''}</div>
         <div class="detail" style="color:#666">${p.advice||p.note}</div>
       </div>
