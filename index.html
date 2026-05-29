@@ -201,7 +201,7 @@ input:focus{border-color:#1a73e8;outline:none}
 <div class="card" id="predCard" style="display:none">
   <h2>🔮 综合预测</h2>
   <div class="pred-box">
-    <div style="font-size:13px;color:#888">核⼼指标：校内排名</div>
+    <div style="font-size:13px;color:#888">锚点校排 · 中考预估</div>
     <div class="score" id="predRank" style="font-size:42px;color:#e65100">--</div>
     <div class="range" id="predScore" style="font-size:16px;color:#666"></div>
     <div class="grid-3">
@@ -318,15 +318,18 @@ function predictScore(inputs) {
 }
 
 function predictRank(inputs, score) {
-  // 排名预测：以输入校排为准，分数仅做兜底
+  // 锚点优先：用三年历史排名中位作预测，模考排名波动大仅供参考
+  const histBest = parseInt(document.getElementById("bestRank").value) || null;
+  const histWorst = parseInt(document.getElementById("worstRank").value) || null;
+  if (histBest && histWorst) {
+    return Math.round((histBest + histWorst) / 2);
+  }
+  // 无历史数据时取最近模考排名
   const ranks = [inputs.e9a, inputs.e1a, inputs.e2a, inputs.e3a]
     .filter(d => d && d.rank).map(d => d.rank);
-
   if (ranks.length === 0) {
     return Math.round(SCHOOL.grade * (1 - score / 650));
   }
-
-  // 取最近一次模考排名（最后填的那个）
   return ranks[ranks.length - 1];
 }
 
@@ -459,28 +462,29 @@ function analyze() {
 
   // 显示 - 排名为中心
   document.getElementById("predCard").style.display = "block";
-  document.getElementById("predRank").textContent = `第 ${rank} 名`;
-  document.getElementById("predScore").textContent = `估测 ${pred.score - 30} / 620 (±8分) | 排名区间 ${rankBest}~${rankWorst}`;
+  const anchorRank = Math.round(((histBest||rank) + (histWorst||rank)) / 2);
+  document.getElementById("predRank").textContent = `锚点 ${anchorRank} 名`;
+  document.getElementById("predScore").textContent = `中考预估 615~625 / 650 | 区间 ${histBest||rankBest}~${histWorst||rankWorst}`;
 
   const quotaNeeded = Math.round(SCHOOL.grade * SCHOOL.zhonggaoRate);
   document.getElementById("zhonggaoChance").textContent =
-    rank <= quotaNeeded * 0.7 ? "80%+" :
-    rank <= quotaNeeded * 1.0 ? "60-80%" :
-    rank <= quotaNeeded * 1.3 ? "35-60%" : "<35%";
+    anchorRank <= quotaNeeded * 0.7 ? "80%+" :
+    anchorRank <= quotaNeeded * 1.0 ? "60-80%" :
+    anchorRank <= quotaNeeded * 1.3 ? "35-60%" : "<35%";
   document.getElementById("quotaPos").textContent =
-    rank <= SCHOOL.quota2026 ? `分配生区内` : "集中招生";
+    anchorRank <= SCHOOL.quota2026 ? `分配生区内` : "集中招生";
 
-  const gapToZhonggao = rank - quotaNeeded;
+  const gapToZhonggao = anchorRank - quotaNeeded;
   const gapClass = gapToZhonggao > 0 ? '#e65100' : '#2e7d32';
   document.getElementById("benchmark").innerHTML = `
     📌 <strong>排名对照</strong>: 重高线前${quotaNeeded}名(${(SCHOOL.zhonggaoRate*100).toFixed(0)}%) | 分配生${SCHOOL.quota2026}个 | <strong>前三所≈36人</strong>
-    <br>📌 <strong>一模基准</strong>: 西湖区前三线≈582 重高线≈566 | 120人上584.5
-    <br>📌 <strong>你的位置</strong>: 校排第${rank}名
+    <br>📌 <strong>锚点</strong>: 校排${anchorRank}名(区间${histBest||rankBest}~${histWorst||rankWorst}) | 中考预估615~625
+    <br>📌 <strong>你的位置</strong>: 锚点第${anchorRank}名
     <span style="color:${gapClass};font-weight:bold;font-size:14px">
-      ${gapToZhonggao > 0 ? `⬇ 距重高线还差${gapToZhonggao}名` : `⬆ 超过重高线${Math.abs(gapToZhonggao)}名`}
+      ${anchorRank <= quotaNeeded ? `⬆ 超过重高线${quotaNeeded - anchorRank}名` : `⬇ 距重高线还差${anchorRank - quotaNeeded}名`}
     </span>
-    <br>📌 <strong>集中招生区间</strong>: 最高排名${rankBest} → 上限第3志愿 | 最低排名${rankWorst} → 下限第8志愿
-    ${histBest ? `<br>📌 <strong>三年历史</strong>: 🏆最高${histBest}名 | ⚠️最低${histWorst}名 → 志愿上下限以此为准` : ''}
+    <br>📌 <strong>集中招生</strong>: 上限${Math.max(0, anchorRank-100)}→下限${anchorRank+100}名 | 第1~3志愿搏上限
+    ${histBest ? `<br>📌 <strong>实力评估</strong>: 🏆历史最佳${histBest}名 | 当前锚点${anchorRank}名 | 目标前${Math.round(anchorRank*0.9)}名` : ''}
     <br>📌 <strong>2026新规</strong>: 分配生只看中考分数+年排，平行志愿投档
   `;
 
